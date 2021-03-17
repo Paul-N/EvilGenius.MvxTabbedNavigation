@@ -1,8 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Navigation\NavigationService2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Navigation\NavigationService2.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MvvmCross" Version="7.1.2" />

@@ -16,6 +16,6 @@ namespace EvilGenius.Mvx.TabNavigation.Android.ViewModels
     {
         protected ViewModelHolder() : base() { }
 
-        public ViewModelHolder(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
+        public ViewModelHolder(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer){ }
     }
 }

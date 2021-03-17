@@ -15,7 +15,7 @@ using System.Text;
 namespace NavigationDemo.Android.Activities
 {
     [Activity(
-        Label = "$rootnamespace$"
+        Label = "NavigationDemo"
         , MainLauncher = true
         , NoHistory = true
         , ScreenOrientation = ScreenOrientation.Portrait)]

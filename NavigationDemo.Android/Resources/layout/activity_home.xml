@@ -5,14 +5,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <EditText
+        android:id="@+id/txt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="40dp"
-        local:MvxBind="Text Text" />
-    <Button
+        android:textSize="40dp" />
+      <Button
+        android:id="@+id/btn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Reset"
-        android:textSize="40dp"
-        local:MvxBind="Click ResetTextCommand" />
+        android:textSize="40dp" />
 </LinearLayout>

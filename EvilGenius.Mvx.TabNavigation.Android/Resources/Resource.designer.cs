@@ -4072,16 +4072,19 @@ namespace EvilGenius.Mvx.TabNavigation.Android
 			public static int view_tree_saved_state_registry_owner = 2131230954;
 			
 			// aapt resource value: 0x7F0800EB
-			public static int visible = 2131230955;
+			public static int view_tree_view_model_store_owner = 2131230955;
 			
 			// aapt resource value: 0x7F0800EC
-			public static int visible_removing_fragment_view_tag = 2131230956;
+			public static int visible = 2131230956;
 			
 			// aapt resource value: 0x7F0800ED
-			public static int withText = 2131230957;
+			public static int visible_removing_fragment_view_tag = 2131230957;
 			
 			// aapt resource value: 0x7F0800EE
-			public static int wrap_content = 2131230958;
+			public static int withText = 2131230958;
+			
+			// aapt resource value: 0x7F0800EF
+			public static int wrap_content = 2131230959;
 			
 			static Id()
 			{

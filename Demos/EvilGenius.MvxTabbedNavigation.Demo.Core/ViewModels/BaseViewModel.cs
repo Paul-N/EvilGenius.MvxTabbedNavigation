@@ -1,0 +1,39 @@
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System.Drawing;
+using System.Windows.Input;
+
+namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels
+{
+	public class BaseViewModel : MvxViewModel, IHasColor
+    {
+		private IMvxNavigationService _navigationService;
+		
+		private int _value;
+
+		public int Value
+		{
+			get => _value;
+			set => SetProperty(ref _value, value);
+		}
+
+		public ICommand IncrCommand => new MvxCommand(() => Value++);
+
+        public ICommand DecrCommand => new MvxCommand(() => Value--);
+
+		public ICommand OpenNewCommand => new MvxCommand(() => _navigationService.Navigate<NewScreenViewModel>());
+
+        public ICommand OpenOverTopCommand => new MvxCommand(() => _navigationService.Navigate<OverTopViewModel>());
+
+        public ICommand CloseSelfCommand => new MvxCommand(() => _navigationService.Close(this));
+
+        public Color Color { get; private set; }
+
+		public BaseViewModel(IMvxNavigationService navigationService)
+		{
+			_navigationService = navigationService;
+            Color = Resource.GetRandomColor();
+        }
+	}
+}

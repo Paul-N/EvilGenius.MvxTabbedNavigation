@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+  </PropertyGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="MvvmCross" Version="8.0.2" />
+		<PackageReference Include="MvvmCross.Plugin.Messenger" Version="8.0.2" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="MvvmCross" Version="9.0.1" />
+		<PackageReference Include="MvvmCross.Plugin.Messenger" Version="9.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\EvilGenius.MvxTabbedNavigation\EvilGenius.MvxTabbedNavigation.csproj" />
+	</ItemGroup>
+
+</Project>

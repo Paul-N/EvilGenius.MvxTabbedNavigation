@@ -5,14 +5,15 @@ using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.Platforms.Ios.Views;
 using MvvmCross.Presenters;
 using MvvmCross.Presenters.Attributes;
+using MvvmCross.Presenters.Hints;
 using MvvmCross.ViewModels;
 using UIKit;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.iOS.Presenters
 {
-    public class OverTopAwareViewPresenter : MvxIosViewPresenter
+    public class TabbedViewPresenter : MvxIosViewPresenter
     {
-        public OverTopAwareViewPresenter(IUIApplicationDelegate applicationDelegate, UIWindow window) : base(applicationDelegate, window)
+        public TabbedViewPresenter(IUIApplicationDelegate applicationDelegate, UIWindow window) : base(applicationDelegate, window)
         {
 
         }
@@ -36,6 +37,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.iOS.Presenters
             {
                 ClearStackPresentationHint pagePresentationHint when ChangePagePresentation(pagePresentationHint) =>
                     Task.FromResult(true),
+                MvxPopToRootPresentationHint popToRootPresentationHint when ChangePagePresentation(popToRootPresentationHint) =>
+                    Task.FromResult(true),
                 _ => base.ChangePresentation(hint)
             };
         }
@@ -51,6 +54,23 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.iOS.Presenters
             else if (MasterNavigationController?.TopViewController is UINavigationController navController)
             {
                 navController.ViewControllers = new UIViewController[0];
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool ChangePagePresentation(MvxPopToRootPresentationHint popToRootPresentationHint)
+        {
+            if (MasterNavigationController?.TopViewController is UITabBarController tabBarController
+                && tabBarController.SelectedViewController is UINavigationController currentNavController)
+            {
+                currentNavController.PopToRootViewController(popToRootPresentationHint.Animated);
+                return true;
+            }
+            else if (MasterNavigationController?.TopViewController is UINavigationController navController)
+            {
+                navController.PopToRootViewController(popToRootPresentationHint.Animated);
                 return true;
             }
 

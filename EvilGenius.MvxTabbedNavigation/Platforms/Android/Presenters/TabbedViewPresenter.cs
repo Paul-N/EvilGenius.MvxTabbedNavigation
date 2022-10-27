@@ -32,7 +32,7 @@ using EvilGenius.MvxTabbedNavigation.Presenters.Hints;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 {
-    public class TabViewPresenter : MvxAndroidViewPresenter, IDisposable
+    public class TabbedViewPresenter : MvxAndroidViewPresenter, IDisposable
     {
         protected virtual ISingleHostActivity? SingleHostActivity => CurrentActivity as ISingleHostActivity;
 
@@ -56,7 +56,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private bool _disposed;
 
-        public TabViewPresenter(IEnumerable<Assembly> androidViewAssemblies, IActivityLifecycleListener activityLifecycleListener) 
+        public TabbedViewPresenter(IEnumerable<Assembly> androidViewAssemblies, IActivityLifecycleListener activityLifecycleListener) 
             : base(androidViewAssemblies) 
         {
             _activityLifecycleSubscription = activityLifecycleListener.WeakSubscribe<IActivityLifecycleListener, ActivityLifecycleEventArgs>(
@@ -449,7 +449,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
         {
             null => throw new ArgumentNullException(nameof(hint)),
             MvxPagePresentationHint pagePresentationHint => Task.FromResult(ChangePagePresentation(pagePresentationHint)),
-            ClearStackPresentationHint clearStackPresentationHint => Task.FromResult(ClearBackStack(clearStackPresentationHint)),
+            ClearStackPresentationHint clearStackPresentationHint => Task.FromResult(ClearBackStack()),
+            MvxPopToRootPresentationHint popToRootPresentationHint => Task.FromResult(PopToRoot(popToRootPresentationHint)),
             _ => base.ChangePresentation(hint),
         };
 
@@ -468,7 +469,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             return false;
         }
 
-        private bool ClearBackStack(ClearStackPresentationHint clearStackPresentationHint)
+        private bool ClearBackStack()
         {
             if (IsTopMostFragmentRoot() && GetRootFragmentBackStackId() is string tabId)
             {
@@ -486,6 +487,25 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                 var stackId = GetHostActivityBackStackId();
                 fm.SaveBackStack(stackId);
                 fm.ClearBackStack(stackId);
+                return true;
+            }
+            return false;
+        }
+
+        private bool PopToRoot(MvxPopToRootPresentationHint popToRootPresentationHint)
+        {
+            if (IsTopMostFragmentRoot() && GetRootFragmentBackStackId() is string tabId && GetFirstFragmentIdInRootFrag() is int firstIdInRoot)
+            {
+                RootFragment!.FragmentManager!.PopBackStack(firstIdInRoot, (int)PopBackStackFlags.Inclusive);
+                
+                this.ViewModelBackStacks.PopToRoot(tabId);
+
+                return true;
+            }
+            else if (GetFirstFragmentIdInHost() is int firstIdInHost)
+            {
+                SingleHostActivity!.FragmentManager!.PopBackStack(firstIdInHost, (int)PopBackStackFlags.Inclusive);
+
                 return true;
             }
             return false;
@@ -533,6 +553,17 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         protected bool IsLastFragmentPresented(FragmentManager? fm) => !(fm?.BackStackEntryCount > 1);
 
+        protected int? GetFirstFragmentIdInRootFrag() => GetFirstFragmentIdInStackStack(RootFragment?.FragmentManager);
+
+        protected int? GetFirstFragmentIdInHost() => GetFirstFragmentIdInStackStack(SingleHostActivity?.FragmentManager);
+
+        private int? GetFirstFragmentIdInStackStack(FragmentManager? fragmentManager) 
+            => fragmentManager is FragmentManager fm
+                && fm.BackStackEntryCount > 0
+                && fm.GetBackStackEntryAt(0).Id is int id
+                ? id
+                : (int?)null;
+
 
         protected virtual void OnHostActivityBackPressed(object sender, EventArgs e) { }
 
@@ -577,7 +608,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             }
         }
 
-        ~TabViewPresenter() => Dispose(disposing: false);
+        ~TabbedViewPresenter() => Dispose(disposing: false);
 
         public void Dispose()
         {

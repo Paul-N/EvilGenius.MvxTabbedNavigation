@@ -26,6 +26,12 @@
             metadata?.Clear();
         }
 
+        public static void PopToRoot(this IList<ViewModelBackStackMetadata> viewModelBackStacks, string tabId)
+        {
+            var metadata = viewModelBackStacks.SingleOrDefault(s => s.TabId == tabId);
+            metadata?.PopToRoot();
+        }
+
         public static void RemoveBackStack(this IList<ViewModelBackStackMetadata> viewModelBackStacks, string tabId)
         {
             if(viewModelBackStacks.FirstOrDefault(s => s.TabId == tabId) is ViewModelBackStackMetadata metadata)

@@ -78,5 +78,15 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
         }
 
         public void Clear() => _viewModelTypesStack.Clear();
+
+        public void PopToRoot()
+        {
+            if (_viewModelTypesStack.Count > 0)
+            {
+                var firstVMtype = _viewModelTypesStack.ElementAt(0);
+                _viewModelTypesStack.Clear();
+                _viewModelTypesStack.Push(firstVMtype); 
+            }
+        }
     }
 }

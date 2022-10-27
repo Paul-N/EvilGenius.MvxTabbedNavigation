@@ -35,7 +35,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android
         protected override IMvxAndroidViewPresenter CreateViewPresenter()
         {
             var listener = Mvx.IoCProvider.Resolve<IActivityLifecycleListener>();
-            return new TabViewPresenter(AndroidViewAssemblies, listener);
+            return new TabbedViewPresenter(AndroidViewAssemblies, listener);
         }
 
 #if SINGLE_PRJ //The plugin asseblies are skipped in net6.0. Why?

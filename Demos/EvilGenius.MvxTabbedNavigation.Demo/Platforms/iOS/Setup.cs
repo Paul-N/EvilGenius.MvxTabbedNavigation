@@ -25,7 +25,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS
 
         protected override ILoggerProvider CreateLogProvider() => new SerilogLoggerProvider();
 
-        protected override IMvxIosViewPresenter CreateViewPresenter() => new OverTopAwareViewPresenter(ApplicationDelegate, Window);
+        protected override IMvxIosViewPresenter CreateViewPresenter() => new TabbedViewPresenter(ApplicationDelegate, Window);
 
 #if SINGLE_PRJ //The plugin asseblies are skipped in net6.0. Why?
         public override IEnumerable<Assembly> GetPluginAssemblies() 

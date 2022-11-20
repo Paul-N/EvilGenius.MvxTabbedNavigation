@@ -1,39 +1,35 @@
-﻿using MvvmCross.Base;
-using MvvmCross.Exceptions;
-using MvvmCross.Platforms.Android.Presenters.Attributes;
-using MvvmCross.Platforms.Android.Presenters;
-using MvvmCross.Presenters.Attributes;
-using MvvmCross.ViewModels;
-using MvvmCross.WeakSubscription;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Android.App;
+using Android.Content;
+using Android.OS;
+using EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Views;
-using MvvmCross.Presenters;
 using EvilGenius.MvxTabbedNavigation.Presenters.Attributes;
-using MvvmCross.Platforms.Android.Views.Fragments;
-using MvvmCross.Platforms.Android.Views;
-using AndroidX.Fragment.App;
-using Fragment = AndroidX.Fragment.App.Fragment;
-using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
-using ActivityX = AndroidX.AppCompat.App.AppCompatActivity;
-using System.Diagnostics;
-using Android.Content;
-using Android.App;
-using FragmentManager = AndroidX.Fragment.App.FragmentManager;
-using Android.OS;
-using MvvmCross.Presenters.Hints;
-using EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;
 using EvilGenius.MvxTabbedNavigation.Presenters.Hints;
+using MvvmCross.Base;
+using MvvmCross.Exceptions;
+using MvvmCross.Platforms.Android.Presenters;
+using MvvmCross.Platforms.Android.Presenters.Attributes;
+using MvvmCross.Platforms.Android.Views;
+using MvvmCross.Platforms.Android.Views.Fragments;
+using MvvmCross.Presenters;
+using MvvmCross.Presenters.Attributes;
+using MvvmCross.Presenters.Hints;
+using MvvmCross.ViewModels;
+using MvvmCross.WeakSubscription;
+using System.Reflection;
+using ActivityX = AndroidX.AppCompat.App.AppCompatActivity;
+using AndroidAppActivity = Android.App.Activity;
+using Fragment = AndroidX.Fragment.App.Fragment;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 {
     public class TabbedViewPresenter : MvxAndroidViewPresenter, IDisposable
     {
+        protected readonly string _masterBackStackId = "__masterBackStack__";
+
         protected virtual ISingleHostActivity? SingleHostActivity => CurrentActivity as ISingleHostActivity;
 
         protected virtual ITabbedFragment? RootFragment { get; set; }
@@ -84,20 +80,29 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
         {
             PendingRequest = vmRequest;
 
-            var showActivityRes = await this.ShowHostActivity(attr.HostActivityType);
-
-            if (!showActivityRes)
+            if (attr.HostActivityType == SingleHostActivity?.GetType())
             {
-                PendingRequest = null;
-                return false;
+                await ShowRootFragment(vmRequest, SingleHostActivity as AndroidAppActivity);
+                return true;
             }
+            else
+            {
 
-            return true;
+                var showActivityRes = await this.ShowHostActivity(attr.HostActivityType);
+
+                if (!showActivityRes)
+                {
+                    PendingRequest = null;
+                    return false;
+                }
+
+                return true;
+            }
         }
 
-        private Task<bool> ShowRootFragment(MvxViewModelRequest vmRequest, MvxActivityEventArgs hostActivityEventArgs)
+        private Task<bool> ShowRootFragment(MvxViewModelRequest vmRequest, AndroidAppActivity? activity)
         {
-            if (hostActivityEventArgs.Activity is ISingleHostActivity singleHostActivity
+            if (activity is ISingleHostActivity singleHostActivity
                 && singleHostActivity.FragmentManager is FragmentManager fm
                 && singleHostActivity.ContainerId is int containerId
                 && vmRequest != null)
@@ -107,7 +112,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                     AddFragment = false,
                     AddToBackStack = true,
                     ViewType = ViewsContainer?.GetViewType(vmRequest?.ViewModelType),
-                    FragmentContentId = containerId
+                    FragmentContentId = containerId,
+                    Tag = _masterBackStackId
                 };
 
                 PerformShowFragmentTransaction(fm, presentationAttr, vmRequest!);
@@ -190,7 +196,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                     AddFragment = false,
                     AddToBackStack = true,
                     ViewType = view,
-                    FragmentContentId = containerId
+                    FragmentContentId = containerId,
+                    Tag = _masterBackStackId
                 };
 
                 PerformShowFragmentTransaction(fm, presentationAttr, vmRequest!);
@@ -315,7 +322,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                     AddFragment = false,
                     AddToBackStack = true,
                     ViewType = type,
-                    FragmentContentId = containerId
+                    FragmentContentId = containerId,
+                    Tag = _masterBackStackId
                 };
 
                 PerformShowFragmentTransaction(fm, presentationAttr, vmRequest!);
@@ -342,10 +350,16 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                 return Task.FromResult(false);
         }
 
-        protected override void OnFragmentChanging(FragmentTransaction? fragmentTransaction, Fragment? fragment, 
-            MvxFragmentPresentationAttribute? attribute, MvxViewModelRequest? request)
+        protected override void OnBeforeFragmentChanging(FragmentTransaction fragmentTransaction, Fragment fragment, MvxFragmentPresentationAttribute attribute, MvxViewModelRequest request)
         {
-            base.OnFragmentChanging(fragmentTransaction, fragment, attribute, request);
+            base.OnBeforeFragmentChanging(fragmentTransaction, fragment, attribute, request);
+
+            fragmentTransaction?.SetReorderingAllowed(true);
+        }
+
+        protected override void OnFragmentChanged(FragmentTransaction? fragmentTransaction, Fragment? fragment, MvxFragmentPresentationAttribute? attribute, MvxViewModelRequest? request)
+        {
+            base.OnFragmentChanged(fragmentTransaction, fragment, attribute, request);
 
             if (fragment != null && fragment is IFragmentHost)
                 fragmentTransaction?.SetPrimaryNavigationFragment(fragment);
@@ -401,9 +415,9 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             if (ea.ActivityState == MvxActivityState.OnResume && PendingRequest?.ViewModelType is Type vmType)
             {
                 var viewType = ViewsContainer?.GetViewType(vmType);
-                if (viewType?.GetInterface(typeof(IFragmentHost).Name) != null)
+                if (viewType?.GetBasePresentationAttributes()?.Any(pa => pa is RootFragmentPresentationAttribute) == true)
                 {
-                    ShowRootFragment(PendingRequest, ea);
+                    ShowRootFragment(PendingRequest, ea.Activity);
                     PendingRequest = null;
                     return;
                 }
@@ -482,9 +496,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
                 return true;
             }
-            else if (SingleHostActivity?.FragmentManager is FragmentManager fm)
+            else if (SingleHostActivity?.FragmentManager is FragmentManager fm && GetHostActivityBackStackId() is string stackId)
             {
-                var stackId = GetHostActivityBackStackId();
                 fm.SaveBackStack(stackId);
                 fm.ClearBackStack(stackId);
                 return true;
@@ -538,7 +551,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         protected string? GetRootFragmentBackStackId() => GetBackStackId(RootFragment?.FragmentManager);
 
-        protected string? GetHostActivityBackStackId() => GetBackStackId(SingleHostActivity?.FragmentManager);
+        protected string? GetHostActivityBackStackId() => _masterBackStackId;
 
         protected string? GetBackStackId(FragmentManager? fm) 
             => fm?.BackStackEntryCount > 0

@@ -12,14 +12,16 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>0.0.2</Version>
+		<Version>0.0.3</Version>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		
+		<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.Contains('net6.0')) ">
-		<PackageReference Include="MvvmCross" Version="9.0.1" />
+		<PackageReference Include="MvvmCross" Version="9.0.2" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" !$(TargetFramework.Contains('net6.0')) ">
@@ -64,6 +66,10 @@
 		<Compile Include="Platforms\Shared\**\*.cs" />
 		<Compile Include="Platforms\ios\**\*.cs" />
 		<Compile Include="Platforms\Apple\**\*.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Properties\" />
 	</ItemGroup>
 
 	<Import Project="Sdk.targets" Sdk="MSBuild.Sdk.Extras" Version="$(MSBuildSdkExtrasVersion)" Condition="'$(UseMSBuild)' == 'true'" />

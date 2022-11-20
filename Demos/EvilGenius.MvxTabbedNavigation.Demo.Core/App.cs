@@ -1,4 +1,6 @@
-﻿using EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels;
+﻿using EvilGenius.MvxTabbedNavigation.Demo.Core.Services;
+using MvvmCross;
+using MvvmCross.IoC;
 using MvvmCross.ViewModels;
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Core
@@ -7,7 +9,8 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Core
     {
         public override void Initialize()
         {
-            RegisterAppStart<HomeViewModel>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<ICurrentUserService, CurrentUserService>();
+            RegisterCustomAppStart<AppStart>();
         }
     }
 }

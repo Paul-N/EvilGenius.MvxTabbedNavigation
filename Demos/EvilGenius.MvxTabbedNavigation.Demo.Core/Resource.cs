@@ -43,6 +43,10 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Core
 
         public static string Send => "Send";
 
+        public static string Thanks => "Thanks for trying this app!";
+
+        public static string Start => "Start";
+
         public static int _44px = 44;
 
         public static int TitleWidth = 200;

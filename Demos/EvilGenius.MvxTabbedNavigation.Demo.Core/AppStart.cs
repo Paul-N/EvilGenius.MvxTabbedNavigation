@@ -15,7 +15,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Core
 
         protected override Task NavigateToFirstViewModel(object hint = null)
         {
-            _currentUserService.IsOnboardingPassed = false;
+            //_currentUserService.IsOnboardingPassed = false;
             if (_currentUserService.IsOnboardingPassed)
                 return NavigationService.Navigate<HomeViewModel>();
             else

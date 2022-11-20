@@ -361,7 +361,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
         {
             base.OnFragmentChanged(fragmentTransaction, fragment, attribute, request);
 
-            if (fragment != null && fragment is IFragmentHost)
+            var viewType = ViewsContainer?.GetViewType(request?.ViewModelType);
+            if (viewType?.GetBasePresentationAttributes()?.Any(pa => pa is RootFragmentPresentationAttribute) == true)
                 fragmentTransaction?.SetPrimaryNavigationFragment(fragment);
         }
 

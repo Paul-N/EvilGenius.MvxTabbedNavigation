@@ -4,7 +4,7 @@ using MvvmCross.ViewModels;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.ViewModels
 {
-    public class NativeViewModelHolder : ViewModel //Should we implement ILifecycleObserver here?
+    public class NativeViewModelHolder : ViewModel, INativeViewModelHolder //Should we implement ILifecycleObserver here?
     {
         public IMvxViewModel? ViewModel { get; private set; }
 

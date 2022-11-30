@@ -17,7 +17,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
     [Register("org.evilgenius.mvxtabbednavigation.platforms.android.views.FragmentWithViewModel")]
     public class FragmentWithViewModel : MvxEventSourceFragment, IMvxFragmentView
     {
-        private NativeViewModelHolder _viewModelHolder;
+        protected INativeViewModelHolder _viewModelHolder;
 
         public string UniqueImmutableCacheTag => string.Empty; //we don't need this
 
@@ -74,12 +74,48 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
                 && navigationSerializer.Serializer is IMvxTextSerializer textSerializer)
             {
                 var vmRequest = textSerializer.DeserializeObject<MvxViewModelRequest>(serializedRequest);
-                var vmInitializerWrapper = new ViewModelInitializerWrapper(vmRequest);
-                var clazz = JavaClass.FromType(typeof(NativeViewModelHolder));
+                var vmInitializerWrapper = new ViewModelInitializerWrapper(vmRequest, ViewholderHolderType);
+                var clazz = JavaClass.FromType(ViewholderHolderType);
                 var myViewModel = new ViewModelProvider(this, ViewModelProvider.Factory.Companion.From(vmInitializerWrapper.GetInitializer())).Get(clazz);
-                _viewModelHolder = myViewModel as NativeViewModelHolder;
+                _viewModelHolder = myViewModel as INativeViewModelHolder;
+                OnViewModelSet();
+                ViewModel?.ViewCreated();
             }
         }
+
+        public virtual void OnViewModelSet() { }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+            ViewModel?.ViewDestroy(viewFinishing: IsRemoving || Activity == null || Activity.IsFinishing);
+        }
+
+        public override void OnStart()
+        {
+            base.OnStart();
+            ViewModel?.ViewAppearing();
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+            ViewModel?.ViewAppeared();
+        }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+            ViewModel?.ViewDisappearing();
+        }
+
+        public override void OnStop()
+        {
+            base.OnStop();
+            ViewModel?.ViewDisappeared();
+        }
+
+        protected virtual Type ViewholderHolderType => typeof(NativeViewModelHolder);
     }
 
     public abstract class FragmentWithViewModel<TViewModel> : FragmentWithViewModel, IMvxFragmentView<TViewModel>

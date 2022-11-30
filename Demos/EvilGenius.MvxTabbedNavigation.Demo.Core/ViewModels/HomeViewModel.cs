@@ -1,6 +1,5 @@
 ﻿using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
-using System.Drawing;
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels
 {

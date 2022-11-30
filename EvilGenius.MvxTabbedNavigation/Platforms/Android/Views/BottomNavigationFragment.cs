@@ -2,28 +2,21 @@
 using Android.OS;
 using Android.Views;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
+using EvilGenius.MvxTabbedNavigation.Platforms.Android.ViewModels;
 using Google.Android.Material.BottomNavigation;
 using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Android.Views;
-using MvvmCross.Platforms.Android.Views.Fragments;
 using MvvmCross.ViewModels;
-using System.Runtime;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
 {
-    public abstract class BottomNavigationFragment : MvxFragment, ITabbedFragment
+    public abstract class BottomNavigationFragment : FragmentWithViewModel, ITabbedFragment
     {
-        private BottomNavigationView _bottomNavigationView;
-
-        private int _selectedTabIndex;
-
-        private const string _tabsCountKey = "__tabsCount";
-
-        private const string _selectedTabIndexKey = "__selectedTabIndex";
-
-        private IList<TabPresentationAttribute> _tabPresentationAttributes = new List<TabPresentationAttribute>();
+        protected TabPresentationData? TabPresentationData => (_viewModelHolder as BottomNavigationNativeViewModelHolder)?.TabPresentationData;
+        
+        private BottomNavigationView? _bottomNavigationView;
 
         public abstract int ContainerId { get; }
 
@@ -34,120 +27,84 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
 
         public event EventHandler<MvxValueEventArgs<int>> TabSelected;
 
-        public void AddTab(TabPresentationAttribute tabPresentationAttribute)
+        public void AddTab(TabPresentationAttribute tabPresentationAttribute) => AddTabCore(tabPresentationAttribute);
+
+        protected void AddTabCore(TabPresentationAttribute tabPresentationAttribute, bool shouldAddToVMHolder = true)
         {
-            var navView = GetBottomNavView();
-            IMenuItem menuItem;
+            var navView = _bottomNavigationView;
+            IMenuItem? menuItem;
             int itemId = View.GenerateViewId();
 
             if (!string.IsNullOrEmpty(tabPresentationAttribute.TabTitle))
-                menuItem = navView.Menu.Add(IMenu.None, itemId, IMenu.None, tabPresentationAttribute.TabTitle);
+                menuItem = navView?.Menu?.Add(IMenu.None, itemId, IMenu.None, tabPresentationAttribute.TabTitle);
             else if (tabPresentationAttribute.TabTitleResourceId != IMenu.None)
-                menuItem = navView.Menu.Add(IMenu.None, itemId, IMenu.None, tabPresentationAttribute.TabTitleResourceId);
+                menuItem = navView?.Menu?.Add(IMenu.None, itemId, IMenu.None, tabPresentationAttribute.TabTitleResourceId);
             else
-                menuItem = navView.Menu.Add(IMenu.None, itemId, IMenu.None, string.Empty);
+                menuItem = navView?.Menu?.Add(IMenu.None, itemId, IMenu.None, string.Empty);
 
             if (!string.IsNullOrEmpty(tabPresentationAttribute.TabTitleCondensed))
-                menuItem.SetTitleCondensed(tabPresentationAttribute.TabTitleCondensed);
+                menuItem?.SetTitleCondensed(tabPresentationAttribute.TabTitleCondensed);
             else if (tabPresentationAttribute.TabTitleCondensedResourceId != IMenu.None)
-                menuItem.SetTitleCondensed(Context.Resources.GetString(tabPresentationAttribute.TabTitleCondensedResourceId));
+                menuItem?.SetTitleCondensed(Context.Resources.GetString(tabPresentationAttribute.TabTitleCondensedResourceId));
 
             if (tabPresentationAttribute.IconResourceId != IMenu.None)
-                menuItem.SetIcon(tabPresentationAttribute.IconResourceId);
-
-            _tabPresentationAttributes.Add(tabPresentationAttribute);
+                menuItem?.SetIcon(tabPresentationAttribute.IconResourceId);
+            
+            if(shouldAddToVMHolder)
+                TabPresentationData?.AddTab(tabPresentationAttribute);
         }
 
         public void SelectTabAt(int index)
         {
-            var navView = GetBottomNavView();
-            var item = navView.Menu.GetItem(index);
+            var item = _bottomNavigationView?.Menu.GetItem(index);
             if(item != null)
-                navView.SelectedItemId = item!.ItemId;
-            
-            _selectedTabIndex = index;
+                _bottomNavigationView!.SelectedItemId = item!.ItemId;
+
+            TabPresentationData?.SetSelectedTabIndex(index);
         }
 
         public void RemoveTab(string tabId)
         {
-            var attrToRemove = _tabPresentationAttributes.FirstOrDefault(a => a.TabId == tabId);
+            var indexToRemove = TabPresentationData?.RemoveTabById(tabId);
 
-            if (attrToRemove != null)
+            if (indexToRemove is int index)
             {
-                var navView = GetBottomNavView();
+                var menu = _bottomNavigationView?.Menu;
 
-                var index = _tabPresentationAttributes.IndexOf(attrToRemove);
-
-                if (navView?.Menu?.GetItem(index) is IMenuItem menuItem)
-                    navView?.Menu?.RemoveItem(menuItem.ItemId);
-                
-                _tabPresentationAttributes.Remove(attrToRemove);
-            }
-        }
-
-        private BottomNavigationView GetBottomNavView()
-        {
-            if (_bottomNavigationView != null)
-                return _bottomNavigationView;
-            else
-            {
-                _bottomNavigationView = View?.FindViewById<BottomNavigationView>(BottomNavigationViewId);
-                if (_bottomNavigationView != null)
-                {
-                    //_bottomNavigationView.ItemIconTintList = null;
-                    _bottomNavigationView.ItemSelected += OnBottomBarNavigationItemSelected;
-                }
-                else throw new Exception($"Unable to find navigation view. Check {nameof(BottomNavigationViewId)}");
-
-                return _bottomNavigationView;
+                if (menu?.GetItem(index) is IMenuItem menuItem)
+                    menu.RemoveItem(menuItem.ItemId);
             }
         }
 
         private void OnBottomBarNavigationItemSelected(object sender, BottomNavigationView.ItemSelectedEventArgs ea)
         {
-            var navView = GetBottomNavView();
-
-            for (int i = 0; i < navView.Menu.Size(); i++)
-                if (navView.Menu.GetItem(i) == ea.P0)
+            for (int i = 0; i < _bottomNavigationView.Menu.Size(); i++)
+                if (_bottomNavigationView.Menu.GetItem(i) == ea.P0)
                 {
-                    _selectedTabIndex = i;
+                    TabPresentationData?.SetSelectedTabIndex(i);
                     TabSelected?.Invoke(sender, new MvxValueEventArgs<int>(i));
                 }
         }
+
+        protected override Type ViewholderHolderType => typeof(BottomNavigationNativeViewModelHolder);
 
         public override void OnViewCreated(View view, Bundle? savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
 
-            if (savedInstanceState?.ContainsKey(_tabsCountKey) == true)
+            _bottomNavigationView = View?.FindViewById<BottomNavigationView>(BottomNavigationViewId);
+            if (_bottomNavigationView != null)
             {
-                var tabsCount = savedInstanceState.GetInt(_tabsCountKey);
-
-                _selectedTabIndex = savedInstanceState.GetInt(_selectedTabIndexKey);
-
-                for (int i = 0; i < tabsCount; i++)
-                {
-                    var tabAttr = TabPresentationAttribute.ReadFromBundle(savedInstanceState, i);
-                    AddTab(tabAttr);
-                }
-
-                SelectTabAt(_selectedTabIndex);
+                _bottomNavigationView.ItemSelected += OnBottomBarNavigationItemSelected;
             }
-        }
+            else throw new Exception($"Unable to find navigation view. Check {nameof(BottomNavigationViewId)}");
 
-        public override void OnSaveInstanceState(Bundle outState)
-        {
-            base.OnSaveInstanceState(outState);
-
-            outState.PutInt(_tabsCountKey, _tabPresentationAttributes.Count);
-
-            outState.PutInt(_selectedTabIndexKey, _selectedTabIndex);
-
-            int i = 0;
-            foreach (var attr in _tabPresentationAttributes)
+            if (TabPresentationData is TabPresentationData tabPresentationData && tabPresentationData.Attributes.Any())
             {
-                attr.WriteToBundle(outState, i);
-                i++;
+                foreach (var tabAttr in tabPresentationData.Attributes)
+                    AddTabCore(tabAttr, false);
+
+                this.SelectTabAt(tabPresentationData.SelectedTabIndex);
             }
         }
 

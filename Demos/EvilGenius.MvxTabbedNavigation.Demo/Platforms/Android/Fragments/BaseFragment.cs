@@ -16,7 +16,7 @@ using AndroidResource = EvilGenius.MvxTabbedNavigation.DemoMvx8.Android.Resource
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
 {
-    internal class BaseFragment<TViewModel> : FragmentWithViewModel<TViewModel> where TViewModel : BaseViewModel
+    internal class BaseFragment<TViewModel> : Fragment<TViewModel> where TViewModel : BaseViewModel
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -30,6 +30,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
 
             view.SetTextTo(AndroidResource.Id.btnNew, CoreResource.OpenNew);
             view.SetTextTo(AndroidResource.Id.btnOverTop, CoreResource.OpenOverTop);
+            view.SetTextTo(AndroidResource.Id.btnPopToRoot, CoreResource.PopToRoot);
             view.SetTextTo(AndroidResource.Id.btnCloseSelf, CoreResource.Close);
 
             this.SetToolbarBackButton(view);

@@ -14,8 +14,8 @@ using JavaClass = Java.Lang.Class;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
 {
-    [Register("org.evilgenius.mvxtabbednavigation.platforms.android.views.FragmentWithViewModel")]
-    public class FragmentWithViewModel : MvxEventSourceFragment, IMvxFragmentView
+    [Register("org.evilgenius.mvxtabbednavigation.platforms.android.views.Fragment")]
+    public class Fragment : MvxEventSourceFragment, IMvxFragmentView
     {
         protected INativeViewModelHolder _viewModelHolder;
 
@@ -60,9 +60,9 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
             }
         }
 
-        protected FragmentWithViewModel(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
+        protected Fragment(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 
-        protected FragmentWithViewModel() => this.AddEventListeners();
+        protected Fragment() => this.AddEventListeners();
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -118,12 +118,12 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
         protected virtual Type ViewholderHolderType => typeof(NativeViewModelHolder);
     }
 
-    public abstract class FragmentWithViewModel<TViewModel> : FragmentWithViewModel, IMvxFragmentView<TViewModel>
+    public abstract class Fragment<TViewModel> : Fragment, IMvxFragmentView<TViewModel>
         where TViewModel : class, IMvxViewModel
     {
-        protected FragmentWithViewModel() { }
+        protected Fragment() { }
 
-        protected FragmentWithViewModel(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
+        protected Fragment(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 
         public new TViewModel? ViewModel
         {

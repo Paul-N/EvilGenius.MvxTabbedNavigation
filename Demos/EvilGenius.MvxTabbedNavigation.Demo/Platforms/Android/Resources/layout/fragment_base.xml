@@ -69,12 +69,22 @@
             tools:text="open over top"
             app:MvxBind="Click OpenOverTopCommand"/>
     <Button
-            android:id="@+id/btnCloseSelf"
+            android:id="@+id/btnPopToRoot"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:textColor="@android:color/white"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_below="@id/btnOverTop"
+            android:layout_centerHorizontal="true"
+            tools:text="pop to root"
+            app:MvxBind="Click PopToRootCommand"/>
+    <Button
+            android:id="@+id/btnCloseSelf"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:textColor="@android:color/white"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_below="@id/btnPopToRoot"
             android:layout_centerHorizontal="true"
             tools:text="close"
             app:MvxBind="Click CloseSelfCommand"/>

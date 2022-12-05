@@ -362,7 +362,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             base.OnFragmentChanged(fragmentTransaction, fragment, attribute, request);
 
             var viewType = ViewsContainer?.GetViewType(request?.ViewModelType);
-            if (viewType?.GetBasePresentationAttributes()?.Any(pa => pa is RootFragmentPresentationAttribute) == true)
+            if (viewType?.HasBasePresentationAttribute() == true && viewType?.GetBasePresentationAttributes()?.Any(pa => pa is RootFragmentPresentationAttribute) == true)
                 fragmentTransaction?.SetPrimaryNavigationFragment(fragment);
         }
 
@@ -573,11 +573,10 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private int? GetFirstFragmentIdInStackStack(FragmentManager? fragmentManager) 
             => fragmentManager is FragmentManager fm
-                && fm.BackStackEntryCount > 0
-                && fm.GetBackStackEntryAt(0).Id is int id
-                ? id
-                : (int?)null;
-
+                        && fm.BackStackEntryCount > 0
+                        && fm.GetBackStackEntryAt(1).Id is int id
+                        ? id
+                        : (int?)null;
 
         protected virtual void OnHostActivityBackPressed(object sender, EventArgs e) { }
 

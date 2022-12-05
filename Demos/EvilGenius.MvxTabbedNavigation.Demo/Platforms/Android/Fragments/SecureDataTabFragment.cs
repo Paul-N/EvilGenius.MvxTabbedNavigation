@@ -21,7 +21,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
 {
     [TabPresentation(IconResourceId = AndroidResource.Drawable.ic_lock, TabId = TabNames.TabSecure, TabTitle = CoreResource.SecureTab)]
     [Register("org.evilgenius.tabbednavigation.fragments.SecureDataTabFragment")]
-    internal sealed class SecureDataTabFragment : FragmentWithViewModel<SecureDataTabViewModel>
+    internal sealed class SecureDataTabFragment : Fragment<SecureDataTabViewModel>
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {

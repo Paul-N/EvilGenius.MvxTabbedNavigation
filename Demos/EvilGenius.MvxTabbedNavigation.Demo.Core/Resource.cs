@@ -31,6 +31,8 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Core
 
         public static string OpenOverTop => "Open over the top";
 
+        public static string PopToRoot => "Pop to root";
+
         public static string Close => "Close";
 
         public static string GoLogin => "Go login";

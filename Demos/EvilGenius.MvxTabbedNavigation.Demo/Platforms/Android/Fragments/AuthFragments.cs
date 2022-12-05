@@ -21,7 +21,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
 {
     [TabPresentation(IconResourceId = AndroidResource.Drawable.ic_account, TabId = TabNames.TabLogin, TabTitle = CoreResource.Account)]
     [Register("org.evilgenius.tabbednavigation.fragments.PhoneFragment")]
-    internal sealed class PhoneFragment : FragmentWithViewModel<PhoneViewModel> 
+    internal sealed class PhoneFragment : Fragment<PhoneViewModel> 
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -42,7 +42,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
     }
 
     [Register("org.evilgenius.tabbednavigation.fragments.SmsCodeFragment")]
-    internal sealed class SmsCodeFragment : FragmentWithViewModel<SmsCodeViewModel> 
+    internal sealed class SmsCodeFragment : Fragment<SmsCodeViewModel> 
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -63,7 +63,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
     }
 
     [Register("org.evilgenius.tabbednavigation.fragments.AccountFragment")]
-    internal sealed class AccountFragment : FragmentWithViewModel<AccountViewModel> 
+    internal sealed class AccountFragment : Fragment<AccountViewModel> 
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {

@@ -1,5 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
+using MvvmCross.Presenters.Hints;
 using MvvmCross.ViewModels;
 using System.Drawing;
 using System.Windows.Input;
@@ -25,6 +26,8 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels
 		public ICommand OpenNewCommand => new MvxCommand(() => _navigationService.Navigate<NewScreenViewModel>());
 
         public ICommand OpenOverTopCommand => new MvxCommand(() => _navigationService.Navigate<OverTopViewModel>());
+
+        public ICommand PopToRootCommand => new MvxCommand(() => _navigationService.ChangePresentation(new MvxPopToRootPresentationHint()));
 
         public ICommand CloseSelfCommand => new MvxCommand(() => _navigationService.Close(this));
 

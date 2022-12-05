@@ -20,7 +20,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
 {
     [Register("org.evilgenius.tabbednavigation.fragments.StartFragment")]
     [RootFragmentPresentation(HostActivityType = typeof(MainActivity))]
-    internal sealed class StartFragment : FragmentWithViewModel<StartViewModel>
+    internal sealed class StartFragment : Fragment<StartViewModel>
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {

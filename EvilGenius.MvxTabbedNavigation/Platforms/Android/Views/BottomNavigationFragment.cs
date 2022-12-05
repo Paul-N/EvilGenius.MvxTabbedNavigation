@@ -12,7 +12,7 @@ using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
 {
-    public abstract class BottomNavigationFragment : FragmentWithViewModel, ITabbedFragment
+    public abstract class BottomNavigationFragment : Fragment, ITabbedFragment
     {
         protected TabPresentationData? TabPresentationData => (_viewModelHolder as BottomNavigationNativeViewModelHolder)?.TabPresentationData;
         

@@ -1,7 +1,6 @@
 ﻿using EvilGenius.MvxTabbedNavigation.Demo.Core;
 using EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels;
 using MvvmCross.Platforms.Ios.Views;
-using MvvmCross.Plugin.Color.Platforms.Ios;
 using UIKit;
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
@@ -13,6 +12,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
         private UIButton _btnMinus;
         private UIButton _btnNew;
         private UIButton _btnOverTop;
+        private UIButton _btnPopToRoot;
         private UIButton _btnCloseSelf;
 
         public BaseViewController() { }
@@ -40,9 +40,10 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
             _btnNew = ViewEx.CreateTitledButton(Resource.OpenNew);
 
             _btnOverTop = ViewEx.CreateTitledButton(Resource.OpenOverTop);
+            _btnPopToRoot = ViewEx.CreateTitledButton(Resource.PopToRoot);
             _btnCloseSelf = ViewEx.CreateTitledButton(Resource.Close);
 
-            var stack = ViewEx.CreateStackView(UILayoutConstraintAxis.Vertical, stateStack, _btnNew, _btnOverTop, _btnCloseSelf);
+            var stack = ViewEx.CreateStackView(UILayoutConstraintAxis.Vertical, stateStack, _btnNew, _btnOverTop, _btnPopToRoot, _btnCloseSelf);
 
             View.AddSubview(stack);
 
@@ -59,6 +60,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
             set.Bind(_valLbl).To(vm => vm.Value);
             set.Bind(_btnNew).To(vm => vm.OpenNewCommand);
             set.Bind(_btnOverTop).To(vm => vm.OpenOverTopCommand);
+            set.Bind(_btnPopToRoot).To(vm => vm.PopToRootCommand);
             set.Bind(_btnCloseSelf).To(vm => vm.CloseSelfCommand);
             set.BindBackground(View);
             set.Apply();

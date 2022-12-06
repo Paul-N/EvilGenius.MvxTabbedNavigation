@@ -68,9 +68,9 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.iOS.Presenters
                 currentNavController.PopToRootViewController(popToRootPresentationHint.Animated);
                 return true;
             }
-            else if (MasterNavigationController?.TopViewController is UINavigationController navController)
+            else if (MasterNavigationController != null)
             {
-                navController.PopToRootViewController(popToRootPresentationHint.Animated);
+                MasterNavigationController.PopToRootViewController(popToRootPresentationHint.Animated);
                 return true;
             }
 

@@ -8,7 +8,7 @@ using UIKit;
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
 {
-    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.SecureTab)]
+    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.SecureTab, TabIconName = "ic_lock")]
     internal sealed class SecureDataTabViewController : MvxViewController<SecureDataTabViewModel>
     {
         private UILabel _valLbl;

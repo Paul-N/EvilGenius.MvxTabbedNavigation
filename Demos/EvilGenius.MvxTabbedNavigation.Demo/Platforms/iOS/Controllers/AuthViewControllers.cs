@@ -6,7 +6,7 @@ using UIKit;
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
 {
-    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.LoginTab)]
+    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.LoginTab, TabIconName = "ic_account")]
     internal class PhoneViewControllers : MvxViewController<PhoneViewModel>
     {
         private UITextField _editTextPhone;

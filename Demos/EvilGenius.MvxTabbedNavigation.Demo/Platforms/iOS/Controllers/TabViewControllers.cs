@@ -5,13 +5,13 @@ using MvvmCross.Platforms.Ios.Presenters.Attributes;
 
 namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
 {
-    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.OneTab)]
+    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.OneTab, TabIconName = "ic_one")]
     internal sealed class Tab1ViewController : BaseViewController<Tab1ViewModel> { }
 
-    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.TwoTab)]
+    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.TwoTab, TabIconName = "ic_two")]
     internal sealed class Tab2ViewController : BaseViewController<Tab2ViewModel> { }
 
-    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.ThreeTab)]
+    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.ThreeTab, TabIconName = "ic_three")]
     internal sealed class Tab3ViewController : BaseViewController<Tab3ViewModel> { }
 
     internal sealed class NewScreenViewController : BaseViewController<NewScreenViewModel> { }

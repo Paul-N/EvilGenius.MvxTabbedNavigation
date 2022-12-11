@@ -39,11 +39,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
             get => _viewModelHolder?.ViewModel;
             set
             {
-                //What should we do here? View model is constructed and assigned inside the fragment. Throw an exception?
-#if DEBUG
-                if (System.Diagnostics.Debugger.IsAttached)
-                    System.Diagnostics.Debugger.Break();
-#endif
+                //What should we do here? View model is constructed and assigned inside the fragment.
+                Console.WriteLine($"There was attemt to set {nameof(DataContext)}. Ignoring");
             }
         }
 
@@ -52,11 +49,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
             get => _viewModelHolder?.ViewModel;
             set
             {
-                //What should we do here? View model is constructed and assigned inside the fragment. Throw an exception?
-#if DEBUG
-                if (System.Diagnostics.Debugger.IsAttached)
-                    System.Diagnostics.Debugger.Break();
-#endif
+                //What should we do here? View model is constructed and assigned inside the fragment.
+                Console.WriteLine($"There was attemt to set {nameof(ViewModel)}. Ignoring");
             }
         }
 
@@ -74,8 +68,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
                 && navigationSerializer.Serializer is IMvxTextSerializer textSerializer)
             {
                 var vmRequest = textSerializer.DeserializeObject<MvxViewModelRequest>(serializedRequest);
-                var vmInitializerWrapper = new ViewModelInitializerWrapper(vmRequest, ViewholderHolderType);
-                var clazz = JavaClass.FromType(ViewholderHolderType);
+                var vmInitializerWrapper = new ViewModelInitializerWrapper(vmRequest, ViewModelHolderType);
+                var clazz = JavaClass.FromType(ViewModelHolderType);
                 var myViewModel = new ViewModelProvider(this, ViewModelProvider.Factory.Companion.From(vmInitializerWrapper.GetInitializer())).Get(clazz);
                 _viewModelHolder = myViewModel as INativeViewModelHolder;
                 OnViewModelSet();
@@ -115,7 +109,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
             ViewModel?.ViewDisappeared();
         }
 
-        protected virtual Type ViewholderHolderType => typeof(NativeViewModelHolder);
+        protected virtual Type ViewModelHolderType => typeof(NativeViewModelHolder);
     }
 
     public abstract class Fragment<TViewModel> : Fragment, IMvxFragmentView<TViewModel>

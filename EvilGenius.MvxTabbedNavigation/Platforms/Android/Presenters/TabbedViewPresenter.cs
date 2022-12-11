@@ -277,6 +277,78 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             }
         }
 
+//        protected override void PerformShowFragmentTransaction(FragmentManager fragmentManager, MvxFragmentPresentationAttribute attribute, MvxViewModelRequest request)
+//        {
+//            //ValidateArguments(attribute, request);
+
+//            if (fragmentManager == null)
+//                throw new ArgumentNullException(nameof(fragmentManager));
+
+//            var fragmentName = attribute.Tag ?? attribute.ViewType.FragmentJavaName();
+
+//            IMvxFragmentView? fragmentView = null;
+//            if (attribute.IsCacheableFragment)
+//            {
+//                fragmentView = (IMvxFragmentView)fragmentManager.FindFragmentByTag(fragmentName);
+//            }
+
+//            if (fragmentView == null && attribute.ViewType != null)
+//                fragmentView = CreateFragment(fragmentManager, attribute, attribute.ViewType);
+
+//            var fragment = fragmentView.ToFragment();
+//            if (fragment == null)
+//                throw new MvxException($"Fragment {fragmentName} is null. Cannot perform Fragment Transaction.");
+
+//            // MvxNavigationService provides an already instantiated ViewModel here
+//            if (request is MvxViewModelInstanceRequest instanceRequest)
+//            {
+//                fragmentView!.ViewModel = instanceRequest.ViewModelInstance;
+//            }
+
+//            // save MvxViewModelRequest in the Fragment's Arguments
+//#pragma warning disable CA2000 // Dispose objects before losing scope
+//            var bundle = new Bundle();
+//#pragma warning restore CA2000 // Dispose objects before losing scope
+//            var serializedRequest = NavigationSerializer.Serializer.SerializeObject(request);
+//            bundle.PutString(ViewModelRequestBundleKey, serializedRequest);
+
+//            if (fragment.Arguments == null)
+//            {
+//                fragment.Arguments = bundle;
+//            }
+//            else
+//            {
+//                fragment.Arguments.Clear();
+//                fragment.Arguments.PutAll(bundle);
+//            }
+
+//            var ft = fragmentManager.BeginTransaction();
+
+//            OnBeforeFragmentChanging(ft, fragment, attribute, request);
+
+//            if (attribute.AddToBackStack)
+//                ft.AddToBackStack(fragmentName);
+
+//            OnFragmentChanging(ft, fragment, attribute, request);
+
+//            if (attribute.AddFragment && fragment.IsAdded)
+//            {
+//                ft.Show(fragment);
+//            }
+//            else if (attribute.AddFragment)
+//            {
+//                ft.Add(attribute.FragmentContentId, fragment, fragmentName);
+//            }
+//            else
+//            {
+//                ft.Replace(attribute.FragmentContentId, fragment, fragmentName);
+//            }
+
+//            ft.Commit();
+
+//            OnFragmentChanged(ft, fragment, attribute, request);
+//        }
+
         private Task<bool> CloseTabFragment(IMvxViewModel viewModel, TabPresentationAttribute attribute)
         {
             if (IsTopMostFragmentRoot() && RootFragment?.FragmentManager is FragmentManager fm)
@@ -571,12 +643,21 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         protected int? GetFirstFragmentIdInHost() => GetFirstFragmentIdInStackStack(SingleHostActivity?.FragmentManager);
 
-        private int? GetFirstFragmentIdInStackStack(FragmentManager? fragmentManager) 
-            => fragmentManager is FragmentManager fm
-                        && fm.BackStackEntryCount > 0
-                        && fm.GetBackStackEntryAt(1).Id is int id
-                        ? id
-                        : (int?)null;
+        private int? GetFirstFragmentIdInStackStack(FragmentManager? fragmentManager)
+        {
+            if (fragmentManager != null)
+            {
+                var ids = Enumerable.Range(0, fragmentManager.BackStackEntryCount).Select(i => { var bse = fragmentManager.GetBackStackEntryAt(i);
+                    //return (bse.Id, bse.Name);
+                    return bse.Id;
+                }).ToArray();
+            }
+            return fragmentManager is FragmentManager fm
+                                && fm.BackStackEntryCount > 1
+                                && fm.GetBackStackEntryAt(1).Id is int id
+                                ? id
+                                : (int?)null;
+        }
 
         protected virtual void OnHostActivityBackPressed(object sender, EventArgs e) { }
 

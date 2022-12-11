@@ -86,7 +86,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
                 }
         }
 
-        protected override Type ViewholderHolderType => typeof(BottomNavigationNativeViewModelHolder);
+        protected override Type ViewModelHolderType => typeof(BottomNavigationNativeViewModelHolder);
 
         public override void OnViewCreated(View view, Bundle? savedInstanceState)
         {

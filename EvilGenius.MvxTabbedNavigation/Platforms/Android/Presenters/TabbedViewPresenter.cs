@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
+using AndroidX.Fragment.App;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Views;
@@ -44,11 +45,11 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private IDisposable? _backRequestedSubscription;
 
+        private IDisposable? _hostActivityFragmentAttachedSubscription;
+
         private int _currentTabIndex = 0;
 
         protected IList<ViewModelBackStackMetadata> ViewModelBackStacks { get; } = new List<ViewModelBackStackMetadata>();
-
-        private TabbedFragmentAttachedListener? _tabbedFragAttachedListener;
 
         private bool _disposed;
 
@@ -124,15 +125,14 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             return Task.FromResult(true);
         }
 
-        private void OnTabbedFragmentAttached(object? sender, MvxValueEventArgs<ITabbedFragment> ea)
+        private void OnTabbedFragmentAttached(object? sender, FragmentOnAttachEventArgs ea)
         {
-            if (ea != null)
+            if (ea?.P1 is ITabbedFragment tabbedFragment)
             {
-                var fragment = ea.Value;
-                this.RootFragment = fragment;
-                _tabSelectedSubscription = fragment.WeakSubscribe<ITabbedFragment, MvxValueEventArgs<int>>(nameof(ITabbedFragment.TabSelected), OnTabSelected);
+                this.RootFragment = tabbedFragment;
+                _tabSelectedSubscription = tabbedFragment.WeakSubscribe<ITabbedFragment, MvxValueEventArgs<int>>(nameof(ITabbedFragment.TabSelected), OnTabSelected);
 
-                if(fragment.FragmentManager is FragmentManager fm)
+                if (tabbedFragment.FragmentManager is FragmentManager fm)
                     _tabbedStackChangedSubscription = fm.WeakSubscribe(nameof(FragmentManager.BackStackChanged), OnTabbedFragmentBackStackChanged);
             }
         }
@@ -277,77 +277,6 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             }
         }
 
-//        protected override void PerformShowFragmentTransaction(FragmentManager fragmentManager, MvxFragmentPresentationAttribute attribute, MvxViewModelRequest request)
-//        {
-//            //ValidateArguments(attribute, request);
-
-//            if (fragmentManager == null)
-//                throw new ArgumentNullException(nameof(fragmentManager));
-
-//            var fragmentName = attribute.Tag ?? attribute.ViewType.FragmentJavaName();
-
-//            IMvxFragmentView? fragmentView = null;
-//            if (attribute.IsCacheableFragment)
-//            {
-//                fragmentView = (IMvxFragmentView)fragmentManager.FindFragmentByTag(fragmentName);
-//            }
-
-//            if (fragmentView == null && attribute.ViewType != null)
-//                fragmentView = CreateFragment(fragmentManager, attribute, attribute.ViewType);
-
-//            var fragment = fragmentView.ToFragment();
-//            if (fragment == null)
-//                throw new MvxException($"Fragment {fragmentName} is null. Cannot perform Fragment Transaction.");
-
-//            // MvxNavigationService provides an already instantiated ViewModel here
-//            if (request is MvxViewModelInstanceRequest instanceRequest)
-//            {
-//                fragmentView!.ViewModel = instanceRequest.ViewModelInstance;
-//            }
-
-//            // save MvxViewModelRequest in the Fragment's Arguments
-//#pragma warning disable CA2000 // Dispose objects before losing scope
-//            var bundle = new Bundle();
-//#pragma warning restore CA2000 // Dispose objects before losing scope
-//            var serializedRequest = NavigationSerializer.Serializer.SerializeObject(request);
-//            bundle.PutString(ViewModelRequestBundleKey, serializedRequest);
-
-//            if (fragment.Arguments == null)
-//            {
-//                fragment.Arguments = bundle;
-//            }
-//            else
-//            {
-//                fragment.Arguments.Clear();
-//                fragment.Arguments.PutAll(bundle);
-//            }
-
-//            var ft = fragmentManager.BeginTransaction();
-
-//            OnBeforeFragmentChanging(ft, fragment, attribute, request);
-
-//            if (attribute.AddToBackStack)
-//                ft.AddToBackStack(fragmentName);
-
-//            OnFragmentChanging(ft, fragment, attribute, request);
-
-//            if (attribute.AddFragment && fragment.IsAdded)
-//            {
-//                ft.Show(fragment);
-//            }
-//            else if (attribute.AddFragment)
-//            {
-//                ft.Add(attribute.FragmentContentId, fragment, fragmentName);
-//            }
-//            else
-//            {
-//                ft.Replace(attribute.FragmentContentId, fragment, fragmentName);
-//            }
-
-//            ft.Commit();
-
-//            OnFragmentChanged(ft, fragment, attribute, request);
-//        }
 
         private Task<bool> CloseTabFragment(IMvxViewModel viewModel, TabPresentationAttribute attribute)
         {
@@ -435,7 +364,10 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
             var viewType = ViewsContainer?.GetViewType(request?.ViewModelType);
             if (viewType?.HasBasePresentationAttribute() == true && viewType?.GetBasePresentationAttributes()?.Any(pa => pa is RootFragmentPresentationAttribute) == true)
+            {
                 fragmentTransaction?.SetPrimaryNavigationFragment(fragment);
+                //RootFragment = fragment as ITabbedFragment;
+            }
         }
 
         public override MvxBasePresentationAttribute CreatePresentationAttribute(Type? viewModelType, Type? viewType)
@@ -505,13 +437,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                 if (ea.ActivityState == MvxActivityState.OnCreate)
                 {
                     if (hostActivity.FragmentManager is FragmentManager fm)
-                    {
-                        _tabbedFragAttachedListener = new TabbedFragmentAttachedListener();
-
-                        _tabbedFragAttachedListener.TabbedFragmentFragmentManagerReady += OnTabbedFragmentAttached;
-
-                        fm.AddFragmentOnAttachListener(_tabbedFragAttachedListener);
-                    }
+                        _hostActivityFragmentAttachedSubscription = fm.WeakSubscribe<FragmentManager, FragmentOnAttachEventArgs>(nameof(FragmentManager.FragmentOnAttach), OnTabbedFragmentAttached);
 
                     var backPressendCallback = new EventSourceOnBackPressedCallback(true);
                     _backPressedSubscription = new OnBackPressedEventSubscription(
@@ -599,16 +525,9 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private void ClearHostActivitySubscriptions()
         {
-            if (SingleHostActivity != null && _tabbedFragAttachedListener != null)
-            {
-                _tabbedFragAttachedListener!.TabbedFragmentFragmentManagerReady -= OnTabbedFragmentAttached;
+            _hostActivityFragmentAttachedSubscription?.Dispose();
 
-                SingleHostActivity.FragmentManager?.RemoveFragmentOnAttachListener(_tabbedFragAttachedListener);
-
-                _tabbedFragAttachedListener?.Dispose();
-
-                _tabbedFragAttachedListener = null;
-            }
+            _hostActivityFragmentAttachedSubscription = null;
 
             _backPressedSubscription?.Dispose();
 
@@ -645,13 +564,13 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private int? GetFirstFragmentIdInStackStack(FragmentManager? fragmentManager)
         {
-            if (fragmentManager != null)
-            {
-                var ids = Enumerable.Range(0, fragmentManager.BackStackEntryCount).Select(i => { var bse = fragmentManager.GetBackStackEntryAt(i);
-                    //return (bse.Id, bse.Name);
-                    return bse.Id;
-                }).ToArray();
-            }
+            //if (fragmentManager != null)
+            //{
+            //    var ids = Enumerable.Range(0, fragmentManager.BackStackEntryCount).Select(i => { var bse = fragmentManager.GetBackStackEntryAt(i);
+            //        //return (bse.Id, bse.Name);
+            //        return bse.Id;
+            //    }).ToArray();
+            //}
             return fragmentManager is FragmentManager fm
                                 && fm.BackStackEntryCount > 1
                                 && fm.GetBackStackEntryAt(1).Id is int id

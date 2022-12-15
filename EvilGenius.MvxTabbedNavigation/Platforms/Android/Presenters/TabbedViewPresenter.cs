@@ -39,8 +39,10 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private IDisposable? _tabbedStackChangedSubscription;
 
-        private IDisposable? _activityLifecycleSubscription;
+        private IDisposable? _fragmentAttachedOrDetachedSubscription;
 
+        private IDisposable? _activityLifecycleSubscription;
+        
         private IDisposable? _backPressedSubscription;
 
         private IDisposable? _backRequestedSubscription;
@@ -53,9 +55,13 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
 
         private bool _disposed;
 
-        public TabbedViewPresenter(IEnumerable<Assembly> androidViewAssemblies, IActivityLifecycleListener activityLifecycleListener) 
-            : base(androidViewAssemblies) 
+        public TabbedViewPresenter(IEnumerable<Assembly> androidViewAssemblies, IAttachSource attachSource, IActivityLifecycleListener activityLifecycleListener) 
+            : base(androidViewAssemblies)
         {
+            _fragmentAttachedOrDetachedSubscription = attachSource.WeakSubscribe<IAttachSource, MvxValueEventArgs<(Fragment, bool)>>(
+                nameof(IAttachSource.OnAttachedOrDetached),
+                OnFragmentAttachedOrDetached);
+
             _activityLifecycleSubscription = activityLifecycleListener.WeakSubscribe<IActivityLifecycleListener, ActivityLifecycleEventArgs>(
                 nameof(IActivityLifecycleListener.ActivityStateChanged),
                 OnActivityLifecycleListenerOnChanged);
@@ -123,18 +129,6 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                 return Task.FromResult(false);
 
             return Task.FromResult(true);
-        }
-
-        private void OnTabbedFragmentAttached(object? sender, FragmentOnAttachEventArgs ea)
-        {
-            if (ea?.P1 is ITabbedFragment tabbedFragment)
-            {
-                this.RootFragment = tabbedFragment;
-                _tabSelectedSubscription = tabbedFragment.WeakSubscribe<ITabbedFragment, MvxValueEventArgs<int>>(nameof(ITabbedFragment.TabSelected), OnTabSelected);
-
-                if (tabbedFragment.FragmentManager is FragmentManager fm)
-                    _tabbedStackChangedSubscription = fm.WeakSubscribe(nameof(FragmentManager.BackStackChanged), OnTabbedFragmentBackStackChanged);
-            }
         }
 
         protected virtual Task<bool> ShowHostActivity(Type activityType)
@@ -436,9 +430,6 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
             {
                 if (ea.ActivityState == MvxActivityState.OnCreate)
                 {
-                    if (hostActivity.FragmentManager is FragmentManager fm)
-                        _hostActivityFragmentAttachedSubscription = fm.WeakSubscribe<FragmentManager, FragmentOnAttachEventArgs>(nameof(FragmentManager.FragmentOnAttach), OnTabbedFragmentAttached);
-
                     var backPressendCallback = new EventSourceOnBackPressedCallback(true);
                     _backPressedSubscription = new OnBackPressedEventSubscription(
                         backPressendCallback, 
@@ -454,6 +445,30 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                 if (ea.ActivityState == MvxActivityState.OnDestroy)
                 {
                     ClearHostActivitySubscriptions();
+                }
+            }
+        }
+
+        protected virtual void OnFragmentAttachedOrDetached(object? sender, MvxValueEventArgs<(Fragment, bool)> ea)
+        {
+            if (ea?.Value.Item1 is ITabbedFragment tabbedFragment)
+            {
+                if (ea.Value.Item2) //is attached
+                {
+                    this.RootFragment = tabbedFragment;
+                    _tabSelectedSubscription = tabbedFragment.WeakSubscribe<ITabbedFragment, MvxValueEventArgs<int>>(nameof(ITabbedFragment.TabSelected), OnTabSelected);
+
+                    if (tabbedFragment.FragmentManager is FragmentManager fm)
+                        _tabbedStackChangedSubscription = fm.WeakSubscribe(nameof(FragmentManager.BackStackChanged), OnTabbedFragmentBackStackChanged);
+                }
+                else  //is detached
+                {
+                    _tabbedStackChangedSubscription?.Dispose();
+                    _tabbedStackChangedSubscription = null;
+
+                    _tabSelectedSubscription?.Dispose();
+                    _tabSelectedSubscription = null;
+                    RootFragment = null;
                 }
             }
         }
@@ -613,6 +628,8 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
                     _tabSelectedSubscription = null;
                     _tabbedStackChangedSubscription?.Dispose();
                     _tabbedStackChangedSubscription = null;
+                    _fragmentAttachedOrDetachedSubscription?.Dispose();
+                    _fragmentAttachedOrDetachedSubscription = null;
                     _activityLifecycleSubscription?.Dispose();
                     _activityLifecycleSubscription = null;
                 }

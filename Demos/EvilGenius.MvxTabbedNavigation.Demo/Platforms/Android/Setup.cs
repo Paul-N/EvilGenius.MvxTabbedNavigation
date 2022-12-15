@@ -1,10 +1,12 @@
 ﻿using Android.App;
 using EvilGenius.MvxTabbedNavigation.Demo.Core;
+using EvilGenius.MvxTabbedNavigation.Platforms.Android;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters;
 using Microsoft.Extensions.Logging;
 using MvvmCross;
 using MvvmCross.IoC;
+using MvvmCross.Platforms.Android;
 using MvvmCross.Platforms.Android.Core;
 using MvvmCross.Platforms.Android.Presenters;
 using MvvmCross.Platforms.Android.Views;
@@ -35,7 +37,8 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android
         protected override IMvxAndroidViewPresenter CreateViewPresenter()
         {
             var listener = Mvx.IoCProvider.Resolve<IActivityLifecycleListener>();
-            return new TabbedViewPresenter(AndroidViewAssemblies, listener);
+            var attachSource = Mvx.IoCProvider.Resolve<IAttachSource>();
+            return new TabbedViewPresenter(AndroidViewAssemblies, attachSource, listener);
         }
 
 #if SINGLE_PRJ //The plugin asseblies are skipped in net6.0. Why?
@@ -49,6 +52,10 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android
             MvxAndroidApplication.Instance.RegisterActivityLifecycleCallbacks(activityLifecycleListener);
 
             iocProvider.RegisterSingleton<IActivityLifecycleListener>(activityLifecycleListener);
+
+            var attachSink = new AttachSink();
+            iocProvider.RegisterSingleton<IAttachSink>(attachSink);
+            iocProvider.RegisterSingleton<IAttachSource>(attachSink);
 
             base.InitializeFirstChance(iocProvider);
         }

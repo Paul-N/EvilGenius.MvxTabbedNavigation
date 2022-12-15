@@ -56,7 +56,7 @@ namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
 
         protected Fragment(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 
-        protected Fragment() => this.AddEventListeners();
+        protected Fragment() => FragmentExtensions.AddEventListeners(this);
 
         public override void OnCreate(Bundle savedInstanceState)
         {

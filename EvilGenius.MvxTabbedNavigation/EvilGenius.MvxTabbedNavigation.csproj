@@ -21,7 +21,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.Contains('net6.0')) ">
-		<PackageReference Include="MvvmCross" Version="9.0.2" />
+		<PackageReference Include="MvvmCross" Version="9.0.10" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" !$(TargetFramework.Contains('net6.0')) ">

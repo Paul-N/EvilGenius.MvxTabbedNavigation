@@ -16,7 +16,7 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Activities
         , Theme = "@style/AppTheme.Launcher"
         , NoHistory = true
         , ScreenOrientation = ScreenOrientation.Portrait)]
-    internal sealed class SplashActivity : MvxSplashScreenActivity
+    internal sealed class SplashActivity : MvxStartActivity
     {
         public SplashActivity() : base(AndroidResource.Layout.activity_splash) { }
     }

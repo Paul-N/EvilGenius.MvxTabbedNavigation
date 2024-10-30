@@ -5,8 +5,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MvvmCross" Version="9.0.10" />
-		<PackageReference Include="MvvmCross.Plugin.Messenger" Version="9.0.10" />
+		<PackageReference Include="MvvmCross" Version="9.2.0" />
+		<PackageReference Include="MvvmCross.Plugin.Messenger" Version="9.2.0" />
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="8.0.92" />
 	</ItemGroup>
 

@@ -1,4 +1,6 @@
-﻿using EvilGenius.MvxTabbedNavigation.Presenters.Attributes;
+﻿using System;
+using System.Threading.Tasks;
+using EvilGenius.MvxTabbedNavigation.Presenters.Attributes;
 using EvilGenius.MvxTabbedNavigation.Presenters.Hints;
 using MvvmCross.Platforms.Ios.Presenters;
 using MvvmCross.Platforms.Ios.Presenters.Attributes;

@@ -1,27 +1,28 @@
 ﻿using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ConvertToPrimaryConstructor
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels
+namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels;
+
+public sealed class HomeViewModel : MvxViewModel
 {
-    public sealed class HomeViewModel : MvxViewModel
+    private readonly IMvxNavigationService _navigationService;
+    private bool _areTabsShown;
+
+    public HomeViewModel(IMvxNavigationService navigationService) 
+        => this._navigationService = navigationService;
+
+    public override void ViewAppeared()
     {
-        private readonly IMvxNavigationService navigationService;
-        private bool _areTabsShown;
-
-        public HomeViewModel(IMvxNavigationService navigationService) 
-            => this.navigationService = navigationService;
-
-        public override void ViewAppeared()
+        if (!_areTabsShown)
         {
-            if (!_areTabsShown)
-            {
-                navigationService.Navigate<Tab1ViewModel>();
-                navigationService.Navigate<Tab2ViewModel>();
-                navigationService.Navigate<Tab3ViewModel>();
-                navigationService.Navigate<SecureDataTabViewModel>();
-                navigationService.Navigate<PhoneViewModel>();
-                _areTabsShown = true;
-            }
+            _navigationService.Navigate<Tab1ViewModel>();
+            _navigationService.Navigate<Tab2ViewModel>();
+            _navigationService.Navigate<Tab3ViewModel>();
+            _navigationService.Navigate<SecureDataTabViewModel>();
+            _navigationService.Navigate<PhoneViewModel>();
+            _areTabsShown = true;
         }
     }
 }

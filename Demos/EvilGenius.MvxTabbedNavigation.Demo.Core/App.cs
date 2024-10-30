@@ -3,14 +3,13 @@ using MvvmCross;
 using MvvmCross.IoC;
 using MvvmCross.ViewModels;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Core
+namespace EvilGenius.MvxTabbedNavigation.Demo.Core;
+
+public class App : MvxApplication
 {
-    public class App : MvxApplication
+    public override void Initialize()
     {
-        public override void Initialize()
-        {
-            Mvx.IoCProvider.ConstructAndRegisterSingleton<ICurrentUserService, CurrentUserService>();
-            RegisterCustomAppStart<AppStart>();
-        }
+        Mvx.IoCProvider.ConstructAndRegisterSingleton<ICurrentUserService, CurrentUserService>();
+        RegisterCustomAppStart<AppStart>();
     }
 }

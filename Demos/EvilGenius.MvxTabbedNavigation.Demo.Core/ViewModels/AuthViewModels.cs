@@ -1,4 +1,5 @@
-﻿using EvilGenius.MvxTabbedNavigation.Demo.Core.Model;
+﻿using System.Diagnostics.CodeAnalysis;
+using EvilGenius.MvxTabbedNavigation.Demo.Core.Model;
 using EvilGenius.MvxTabbedNavigation.Presenters.Hints;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
@@ -6,67 +7,69 @@ using MvvmCross.Plugin.Messenger;
 using MvvmCross.ViewModels;
 using System.Drawing;
 using System.Windows.Input;
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ConvertToPrimaryConstructor
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels
+namespace EvilGenius.MvxTabbedNavigation.Demo.Core.ViewModels;
+
+public sealed class PhoneViewModel : MvxViewModel, IHasColor
 {
-    public sealed class PhoneViewModel : MvxViewModel, IHasColor
+    private readonly IMvxNavigationService _navigationService;
+
+    private string _phoneNumber;
+
+    public string PhoneNumber
     {
-        private IMvxNavigationService _navigationService;
-
-        private string _phoneNumber;
-
-        public string PhoneNumber
-        {
-            get => _phoneNumber;
-            set => SetProperty(ref _phoneNumber, value);
-        }
-
-        public ICommand NextCommand => new MvxCommand(() => _navigationService.Navigate<SmsCodeViewModel>());
-
-        public Color Color { get; private set; }
-
-        public PhoneViewModel(IMvxNavigationService navigationService)
-        {
-            _navigationService = navigationService;
-            Color = Resource.GetRandomColor();
-        }
+        get => _phoneNumber;
+        set => SetProperty(ref _phoneNumber, value);
     }
 
-    public sealed class SmsCodeViewModel : MvxViewModel, IHasColor
+    public ICommand NextCommand => new MvxCommand(() => _navigationService.Navigate<SmsCodeViewModel>());
+
+    public Color Color { get; private set; }
+
+    public PhoneViewModel(IMvxNavigationService navigationService)
     {
-        private IMvxNavigationService _navigationService;
-        private readonly IMvxMessenger _messenger;
-        private string _smsCode;
+        _navigationService = navigationService;
+        Color = Resource.GetRandomColor();
+    }
+}
 
-        public string SmsCode
-        {
-            get => _smsCode;
-            set => SetProperty(ref _smsCode, value);
-        }
+public sealed class SmsCodeViewModel : MvxViewModel, IHasColor
+{
+    private readonly IMvxNavigationService _navigationService;
+    private readonly IMvxMessenger _messenger;
+    private string _smsCode;
 
-        public ICommand NextCommand => new MvxCommand(() =>
-        {
-            _messenger.Publish(new LoggedInMessage(this));
-            _navigationService.ChangePresentation(new ClearStackPresentationHint());
-            _navigationService.Navigate<AccountViewModel>();
-        });
-
-        public Color Color { get; private set; }
-
-        public SmsCodeViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger)
-        {
-            _navigationService = navigationService;
-            _messenger = messenger;
-            Color = Resource.GetRandomColor();
-        }
+    public string SmsCode
+    {
+        get => _smsCode;
+        set => SetProperty(ref _smsCode, value);
     }
 
-    public sealed class AccountViewModel : MvxViewModel, IHasColor
+    public ICommand NextCommand => new MvxCommand(() =>
     {
-        public string AccountInfo => Resource.AccountInfo;
+        _messenger.Publish(new LoggedInMessage(this));
+        _navigationService.ChangePresentation(new ClearStackPresentationHint());
+        _navigationService.Navigate<AccountViewModel>();
+    });
 
-        public Color Color { get; private set; }
+    public Color Color { get; private set; }
 
-        public AccountViewModel() => Color = Resource.GetRandomColor();
+    public SmsCodeViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger)
+    {
+        _navigationService = navigationService;
+        _messenger = messenger;
+        Color = Resource.GetRandomColor();
     }
+}
+
+public sealed class AccountViewModel : MvxViewModel, IHasColor
+{
+    public string AccountInfo => Resource.AccountInfo;
+
+    public Color Color { get; private set; }
+
+    [SuppressMessage("ReSharper", "ConvertConstructorToMemberInitializers")]
+    public AccountViewModel() => Color = Resource.GetRandomColor();
 }

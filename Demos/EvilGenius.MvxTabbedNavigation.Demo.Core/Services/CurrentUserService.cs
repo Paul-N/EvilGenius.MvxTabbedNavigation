@@ -1,27 +1,24 @@
-﻿#if NET6_0_OR_GREATER
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Storage;
-#elif NETSTANDARD2_0_OR_GREATER
-using Xamarin.Essentials;
-#endif
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Core.Services
+namespace EvilGenius.MvxTabbedNavigation.Demo.Core.Services;
+
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+internal class CurrentUserService : ICurrentUserService
 {
-    internal class CurrentUserService : ICurrentUserService
+    private readonly string _isLoggedInKey = "__isLoggedIn";
+    private readonly string _isOnboardingPassedKey = "__isOnboardingPassed";
+
+
+    public bool IsLoggedIn 
     {
-        private string _isLoggedInKey = "__isLoggedIn";
-        private string _isOnboardingPassedKey = "__isOnboardingPassed";
-
-
-        public bool IsLoggedIn 
-        {
-            get => Preferences.Get(_isLoggedInKey, false);
-            set => Preferences.Set(_isLoggedInKey, value);
-        }
+        get => Preferences.Get(_isLoggedInKey, false);
+        set => Preferences.Set(_isLoggedInKey, value);
+    }
         
-        public bool IsOnboardingPassed 
-        {
-            get => Preferences.Get(_isOnboardingPassedKey, false);
-            set => Preferences.Set(_isOnboardingPassedKey, value);
-        }
+    public bool IsOnboardingPassed 
+    {
+        get => Preferences.Get(_isOnboardingPassedKey, false);
+        set => Preferences.Set(_isOnboardingPassedKey, value);
     }
 }

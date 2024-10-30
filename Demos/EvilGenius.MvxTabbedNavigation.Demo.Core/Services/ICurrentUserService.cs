@@ -1,9 +1,8 @@
-﻿namespace EvilGenius.MvxTabbedNavigation.Demo.Core.Services
-{
-    public interface ICurrentUserService
-    {
-        bool IsLoggedIn { get; set; }
+﻿namespace EvilGenius.MvxTabbedNavigation.Demo.Core.Services;
 
-        bool IsOnboardingPassed { get; set; }
-    }
+public interface ICurrentUserService
+{
+    bool IsLoggedIn { get; set; }
+
+    bool IsOnboardingPassed { get; set; }
 }

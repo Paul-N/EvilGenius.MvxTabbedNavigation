@@ -1,19 +1,18 @@
 ﻿using MvvmCross.Presenters.Attributes;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
+
+public class TabPresentationAttribute : MvxBasePresentationAttribute
 {
-    public class TabPresentationAttribute : MvxBasePresentationAttribute
-    {
-        public string TabId { get; set; } = null!;
+    public string TabId { get; set; } = null!;
 
-        public string? TabTitle { get; set; }
+    public string? TabTitle { get; set; }
 
-        public string? TabTitleCondensed { get; set; }
+    public string? TabTitleCondensed { get; set; }
 
-        public int TabTitleResourceId { get; set; }
+    public int TabTitleResourceId { get; set; }
 
-        public int TabTitleCondensedResourceId { get; set; }
+    public int TabTitleCondensedResourceId { get; set; }
 
-        public int IconResourceId { get; set; }
-    }
+    public int IconResourceId { get; set; }
 }

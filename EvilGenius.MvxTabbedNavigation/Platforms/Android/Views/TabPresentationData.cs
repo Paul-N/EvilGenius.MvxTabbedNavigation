@@ -1,31 +1,30 @@
 ﻿using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views;
+
+public class TabPresentationData
 {
-    public class TabPresentationData
-    {
-        public List<TabPresentationAttribute> Attributes { get; private set; } = new();
+    public List<TabPresentationAttribute> Attributes { get; } = new();
         
-        private int _selectedTabIndex;
+    private int _selectedTabIndex;
 
-        public int SelectedTabIndex => _selectedTabIndex;
+    public int SelectedTabIndex => _selectedTabIndex;
 
-        public void SetSelectedTabIndex(int index) => _selectedTabIndex = index;
+    public void SetSelectedTabIndex(int index) => _selectedTabIndex = index;
 
-        public void AddTab(TabPresentationAttribute tabPresentationAttribute) => Attributes.Add(tabPresentationAttribute);
+    public void AddTab(TabPresentationAttribute tabPresentationAttribute) => Attributes.Add(tabPresentationAttribute);
 
-        public int? RemoveTabById(string tabId)
+    public int? RemoveTabById(string tabId)
+    {
+        var attrToRemove = Attributes.FirstOrDefault(a => a.TabId == tabId);
+
+        if (attrToRemove != null)
         {
-            var attrToRemove = Attributes.FirstOrDefault(a => a.TabId == tabId);
-
-            if (attrToRemove != null)
-            {
-                var index = Attributes.IndexOf(attrToRemove);
-                Attributes.Remove(attrToRemove);
-                return index;
-            }
-
-            return null;
+            var index = Attributes.IndexOf(attrToRemove);
+            Attributes.Remove(attrToRemove);
+            return index;
         }
+
+        return null;
     }
 }

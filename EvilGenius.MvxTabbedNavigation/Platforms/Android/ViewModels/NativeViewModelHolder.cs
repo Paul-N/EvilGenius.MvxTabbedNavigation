@@ -2,22 +2,22 @@
 using MvvmCross.Base;
 using MvvmCross.ViewModels;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.ViewModels
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.ViewModels;
+
+public class NativeViewModelHolder : ViewModel, INativeViewModelHolder //Should we implement ILifecycleObserver here?
 {
-    public class NativeViewModelHolder : ViewModel, INativeViewModelHolder //Should we implement ILifecycleObserver here?
+    public IMvxViewModel? ViewModel { get; private set; }
+
+    // ReSharper disable once ConvertToPrimaryConstructor
+    public NativeViewModelHolder(IMvxViewModel viewModel) => ViewModel = viewModel;
+
+    protected override void Dispose(bool disposing)
     {
-        public IMvxViewModel? ViewModel { get; private set; }
-
-        public NativeViewModelHolder(IMvxViewModel viewModel) => ViewModel = viewModel;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-                ViewModel?.DisposeIfDisposable();
+        if (disposing)
+            ViewModel?.DisposeIfDisposable();
             
-            ViewModel = null;
+        ViewModel = null;
             
-            base.Dispose(disposing);
-        }
+        base.Dispose(disposing);
     }
 }

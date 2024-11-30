@@ -33,19 +33,19 @@ namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Activities
 
         public override void OnBackPressed()
         {
-            var ea = new BackPressedRequestedEventArgs { Result = BackPressedHadlingResult.NotHandled };
+            var ea = new BackPressedRequestedEventArgs { Result = BackPressedHandlingResult.NotHandled };
             
             OnBackRequested?.Invoke(this, ea);
 
             switch (ea.Result)
             {
-                case BackPressedHadlingResult.NotHandled:
+                case BackPressedHandlingResult.NotHandled:
                     base.OnBackPressed();
                     break;
-                case BackPressedHadlingResult.Handled:
+                case BackPressedHandlingResult.Handled:
                     //Do nothing
                     break;
-                case BackPressedHadlingResult.FinishActivity:
+                case BackPressedHandlingResult.FinishActivity:
                     Finish();
                     break;
                 default:

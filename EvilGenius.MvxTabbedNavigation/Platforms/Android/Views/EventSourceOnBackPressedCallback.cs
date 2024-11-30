@@ -1,13 +1,13 @@
 ﻿using AndroidX.Activity;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views;
+
+internal class EventSourceOnBackPressedCallback : OnBackPressedCallback
 {
-    internal class EventSourceOnBackPressedCallback : OnBackPressedCallback
-    {
-        public event EventHandler OnBackPressed = null!;
+    public event EventHandler OnBackPressed = null!;
 
-        public EventSourceOnBackPressedCallback(bool enabled) : base(enabled) { }
+    // ReSharper disable once ConvertToPrimaryConstructor
+    public EventSourceOnBackPressedCallback(bool enabled) : base(enabled) { }
 
-        public override void HandleOnBackPressed() => OnBackPressed?.Invoke(this, EventArgs.Empty);
-    }
+    public override void HandleOnBackPressed() => OnBackPressed?.Invoke(this, EventArgs.Empty);
 }

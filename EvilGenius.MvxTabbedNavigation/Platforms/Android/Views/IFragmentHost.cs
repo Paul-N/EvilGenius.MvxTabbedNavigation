@@ -1,11 +1,10 @@
 ﻿using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
-{
-    public interface IFragmentHost
-    {
-        int ContainerId { get; }
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views;
 
-        FragmentManager FragmentManager { get; }
-    }
+public interface IFragmentHost
+{
+    int ContainerId { get; }
+
+    FragmentManager FragmentManager { get; }
 }

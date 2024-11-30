@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using EvilGenius.MvxTabbedNavigation.Presenters.Attributes;
+﻿using EvilGenius.MvxTabbedNavigation.Presenters.Attributes;
 using EvilGenius.MvxTabbedNavigation.Presenters.Hints;
 using MvvmCross.Platforms.Ios.Presenters;
 using MvvmCross.Platforms.Ios.Presenters.Attributes;
@@ -9,133 +7,127 @@ using MvvmCross.Presenters;
 using MvvmCross.Presenters.Attributes;
 using MvvmCross.Presenters.Hints;
 using MvvmCross.ViewModels;
-using UIKit;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.iOS.Presenters
+namespace EvilGenius.MvxTabbedNavigation.Platforms.iOS.Presenters;
+
+public class TabbedViewPresenter : MvxIosViewPresenter
 {
-    public class TabbedViewPresenter : MvxIosViewPresenter
+    // ReSharper disable once ConvertToPrimaryConstructor
+    public TabbedViewPresenter(IUIApplicationDelegate applicationDelegate, UIWindow window) : base(applicationDelegate, window) { }
+
+    public override void RegisterAttributeTypes()
     {
-        public TabbedViewPresenter(IUIApplicationDelegate applicationDelegate, UIWindow window) : base(applicationDelegate, window)
-        {
+        base.RegisterAttributeTypes();
 
-        }
-
-        public override void RegisterAttributeTypes()
-        {
-            base.RegisterAttributeTypes();
-
-            AttributeTypesToActionsDictionary.Register<OverTopPresentationAttribute>(
-                (viewType, attribute, request) =>
-                {
-                    var viewController = (UIViewController)this.CreateViewControllerFor(request);
-                    return ShowOverTopViewController(viewController, attribute, request);
-                },
-                CloseOverTopViewController);
-        }
-
-        public override Task<bool> ChangePresentation(MvxPresentationHint hint)
-        {
-            return hint switch
+        AttributeTypesToActionsDictionary.Register<OverTopPresentationAttribute>(
+            (_, attribute, request) =>
             {
-                ClearStackPresentationHint pagePresentationHint when ChangePagePresentation(pagePresentationHint) =>
-                    Task.FromResult(true),
-                MvxPopToRootPresentationHint popToRootPresentationHint when ChangePagePresentation(popToRootPresentationHint) =>
-                    Task.FromResult(true),
-                _ => base.ChangePresentation(hint)
-            };
-        }
+                var viewController = (UIViewController)this.CreateViewControllerFor(request);
+                return ShowOverTopViewController(viewController, attribute, request);
+            },
+            CloseOverTopViewController);
+    }
 
-        private bool ChangePagePresentation(ClearStackPresentationHint pagePresentationHint)
+    public override Task<bool> ChangePresentation(MvxPresentationHint hint)
+    {
+        return hint switch
         {
-            if (MasterNavigationController?.TopViewController is UITabBarController tabBarController
-                && tabBarController.SelectedViewController is UINavigationController currentNavController)
-            {
-                currentNavController.ViewControllers = new UIViewController[0];
-                return true;
-            }
-            else if (MasterNavigationController?.TopViewController is UINavigationController navController)
-            {
-                navController.ViewControllers = new UIViewController[0];
-                return true;
-            }
+            ClearStackPresentationHint when ClearStack() =>
+                Task.FromResult(true),
+            MvxPopToRootPresentationHint popToRootPresentationHint when PopToRoot(popToRootPresentationHint) =>
+                Task.FromResult(true),
+            _ => base.ChangePresentation(hint)
+        };
+    }
 
-            return false;
-        }
-
-        private bool ChangePagePresentation(MvxPopToRootPresentationHint popToRootPresentationHint)
+    private bool ClearStack()
+    {
+        if (MasterNavigationController?.TopViewController is UITabBarController { SelectedViewController: UINavigationController currentNavController })
         {
-            if (MasterNavigationController?.TopViewController is UITabBarController tabBarController
-                && tabBarController.SelectedViewController is UINavigationController currentNavController)
-            {
-                currentNavController.PopToRootViewController(popToRootPresentationHint.Animated);
-                return true;
-            }
-            else if (MasterNavigationController != null)
-            {
-                MasterNavigationController.PopToRootViewController(popToRootPresentationHint.Animated);
-                return true;
-            }
-
-            return false;
+            currentNavController.ViewControllers = [];
+            return true;
         }
-
-        protected virtual Task<bool> ShowOverTopViewController(
-            UIViewController viewController,
-            OverTopPresentationAttribute attribute,
-            MvxViewModelRequest request)
+        else if (MasterNavigationController?.TopViewController is UINavigationController navController)
         {
-            ValidateArguments(viewController, attribute);
-
-            if (MasterNavigationController != null)
-            {
-                PushViewControllerIntoStack(MasterNavigationController, viewController, ConvertToChildPresentationAttribute(attribute));
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            navController.ViewControllers = [];
+            return true;
         }
 
-        protected virtual Task<bool> CloseOverTopViewController(IMvxViewModel viewModel, OverTopPresentationAttribute attribute)
+        return false;
+    }
+
+    private bool PopToRoot(MvxPopToRootPresentationHint popToRootPresentationHint)
+    {
+        if (MasterNavigationController?.TopViewController is UITabBarController { SelectedViewController: UINavigationController currentNavController })
         {
-            ValidateArguments(viewModel, attribute);
-
-            // if the current root is a NavigationController, close it in the stack
-            if (MasterNavigationController != null && TryCloseViewControllerInsideStack(MasterNavigationController, viewModel, ConvertToChildPresentationAttribute(attribute)))
-                return Task.FromResult(true);
-
-            return Task.FromResult(false);
+            currentNavController.PopToRootViewController(popToRootPresentationHint.Animated);
+            return true;
         }
-
-        private MvxChildPresentationAttribute ConvertToChildPresentationAttribute(OverTopPresentationAttribute attribute)
-            => new MvxChildPresentationAttribute { ViewModelType = attribute.ViewModelType, ViewType = attribute.ViewType };
-
-        private static void ValidateArguments(UIViewController viewController, MvxBasePresentationAttribute attribute)
+        else if (MasterNavigationController != null)
         {
-            if (viewController == null)
-                throw new ArgumentNullException(nameof(viewController));
-
-            if (attribute == null)
-                throw new ArgumentNullException(nameof(attribute));
+            MasterNavigationController.PopToRootViewController(popToRootPresentationHint.Animated);
+            return true;
         }
 
-        private static void ValidateArguments(IMvxViewModel viewModel, MvxBasePresentationAttribute attribute)
+        return false;
+    }
+
+    protected virtual Task<bool> ShowOverTopViewController(
+        UIViewController viewController,
+        OverTopPresentationAttribute attribute,
+        MvxViewModelRequest request)
+    {
+        ValidateArguments(viewController, attribute);
+
+        if (MasterNavigationController != null)
         {
-            if (viewModel == null)
-                throw new ArgumentNullException(nameof(viewModel));
-
-            if (attribute == null)
-                throw new ArgumentNullException(nameof(attribute));
+            PushViewControllerIntoStack(MasterNavigationController, viewController, ConvertToChildPresentationAttribute(attribute));
+            return Task.FromResult(true);
         }
 
-        protected override Task<bool> ShowChildViewController(UIViewController viewController, MvxChildPresentationAttribute attribute, MvxViewModelRequest request)
+        return Task.FromResult(false);
+    }
+
+    protected virtual Task<bool> CloseOverTopViewController(IMvxViewModel viewModel, OverTopPresentationAttribute attribute)
+    {
+        ValidateArguments(viewModel, attribute);
+
+        // if the current root is a NavigationController, close it in the stack
+        if (MasterNavigationController != null && TryCloseViewControllerInsideStack(MasterNavigationController, viewModel, ConvertToChildPresentationAttribute(attribute)))
+            return Task.FromResult(true);
+
+        return Task.FromResult(false);
+    }
+
+    private MvxChildPresentationAttribute ConvertToChildPresentationAttribute(OverTopPresentationAttribute attribute)
+        => new MvxChildPresentationAttribute { ViewModelType = attribute.ViewModelType, ViewType = attribute.ViewType };
+
+    private static void ValidateArguments(UIViewController viewController, MvxBasePresentationAttribute attribute)
+    {
+        if (viewController == null)
+            throw new ArgumentNullException(nameof(viewController));
+
+        if (attribute == null)
+            throw new ArgumentNullException(nameof(attribute));
+    }
+
+    private static void ValidateArguments(IMvxViewModel viewModel, MvxBasePresentationAttribute attribute)
+    {
+        if (viewModel == null)
+            throw new ArgumentNullException(nameof(viewModel));
+
+        if (attribute == null)
+            throw new ArgumentNullException(nameof(attribute));
+    }
+
+    protected override Task<bool> ShowChildViewController(UIViewController viewController, MvxChildPresentationAttribute attribute, MvxViewModelRequest request)
+    {
+        if (MasterNavigationController?.ViewControllers?.Length >= 2)
         {
-            if (MasterNavigationController?.ViewControllers?.Length >= 2)
-            {
-                PushViewControllerIntoStack(MasterNavigationController, viewController, attribute);
-                return Task.FromResult(true);
-            }
-
-            return base.ShowChildViewController(viewController, attribute, request);
+            PushViewControllerIntoStack(MasterNavigationController, viewController, attribute);
+            return Task.FromResult(true);
         }
+
+        return base.ShowChildViewController(viewController, attribute, request);
     }
 }

@@ -1,9 +1,8 @@
 ﻿using MvvmCross.ViewModels;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.ViewModels
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.ViewModels;
+
+public interface INativeViewModelHolder
 {
-    public interface INativeViewModelHolder
-    {
-        public IMvxViewModel? ViewModel { get; }
-    }
+    public IMvxViewModel? ViewModel { get; }
 }

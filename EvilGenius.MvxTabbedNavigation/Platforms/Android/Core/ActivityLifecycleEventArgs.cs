@@ -1,7 +1,4 @@
-﻿using System;
-using Android.App;
-using Android.OS;
-using MvvmCross.Platforms.Android.Views;
+﻿using MvvmCross.Platforms.Android.Views;
 // ReSharper disable ConvertToPrimaryConstructor
 
 namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;

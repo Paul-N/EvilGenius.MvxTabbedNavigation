@@ -1,92 +1,88 @@
 ﻿using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
 using MvvmCross.ViewModels;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters;
+
+public class ViewModelBackStackMetadata
 {
-    public class ViewModelBackStackMetadata
+    public bool IsPending { get; private set; }
+
+    public string TabId { get; private set; } = null!;
+
+    private TabPresentationAttribute? _pendingPresentationAttribute;
+
+    private MvxViewModelRequest? _pendingVmRequest;
+
+    private Stack<Type> ViewModelTypesStack { get; } = new ();
+
+    private ViewModelBackStackMetadata(TabPresentationAttribute attribute, MvxViewModelRequest vmRequest)
     {
-        public bool IsPending { get; private set; }
+        if(attribute == null)
+            throw new ArgumentNullException(nameof(attribute));
 
-        public string TabId { get; private set; } = null!;
+        if (attribute.ViewModelType == null)
+            throw new ArgumentException($"{nameof(attribute)}.{nameof(attribute.ViewModelType)} is null");
 
-        private TabPresentationAttribute? _pendingPresentationAttribute;
+        IsPending = true;
+        _pendingPresentationAttribute = attribute;
+        _pendingVmRequest = vmRequest ?? throw new ArgumentNullException(nameof(vmRequest));
+        Initialize(attribute.TabId, vmRequest.ViewModelType!);
+    }
 
-        private MvxViewModelRequest? _pendingVMRequest;
+    private ViewModelBackStackMetadata(string tabId, Type viewModelType)
+    {
+        if (tabId == null)
+            throw new ArgumentNullException(nameof(tabId));
 
-        private Stack<Type> _viewModelTypesStack { get; } = new Stack<Type>();
+        if (viewModelType == null)
+            throw new ArgumentNullException(nameof(viewModelType));
 
-        private ViewModelBackStackMetadata(TabPresentationAttribute attribute, MvxViewModelRequest vmRequest)
+        IsPending = false;
+        Initialize(tabId, viewModelType);
+    }
+
+    private void Initialize(string tabId, Type viewModelType)
+    {
+        TabId = tabId;
+        ViewModelTypesStack.Push(viewModelType);
+    }
+
+    public (TabPresentationAttribute attribute, MvxViewModelRequest vmRequest) ExtractPendingRequestData()
+    {
+        IsPending = false;
+        var result = (_pendingPresentationAttribute!, _pendingVmRequest!);
+        _pendingPresentationAttribute = null;
+        _pendingVmRequest = null;
+        return result;
+    }
+
+    public static ViewModelBackStackMetadata CreateFromPendingRequest(TabPresentationAttribute attribute, MvxViewModelRequest vmRequest) 
+        => new ViewModelBackStackMetadata(attribute, vmRequest);
+
+    public static ViewModelBackStackMetadata Create(string tabId, Type viewModelType) 
+        => new ViewModelBackStackMetadata(tabId, viewModelType);
+
+    public bool HasViewModelInStack(Type viewModel) => ViewModelTypesStack.Contains(viewModel);
+
+    public void Push(Type viewModelType) => ViewModelTypesStack.Push(viewModelType);
+
+    public void Pop() => ViewModelTypesStack.Pop();
+
+    public void PopIfNeeded(int count)
+    {
+        if (count == ViewModelTypesStack.Count - 1)
+            ViewModelTypesStack.Pop();
+    }
+
+    public void Clear() => ViewModelTypesStack.Clear();
+
+    public void PopToRoot()
+    {
+        if (ViewModelTypesStack.Count > 0)
         {
-            if(attribute == null)
-                throw new ArgumentNullException(nameof(attribute));
-
-            if (attribute.ViewModelType == null)
-                throw new ArgumentException($"{nameof(attribute)}.{nameof(attribute.ViewModelType)} is null");
-
-            if (vmRequest == null)
-                throw new ArgumentNullException(nameof(vmRequest));
-
-            IsPending = true;
-            _pendingPresentationAttribute = attribute;
-            _pendingVMRequest = vmRequest;
-            Initialize(attribute.TabId, vmRequest.ViewModelType!);
-        }
-
-        private ViewModelBackStackMetadata(string tabId, Type viewModelType)
-        {
-            if (tabId == null)
-                throw new ArgumentNullException(nameof(tabId));
-
-            if (viewModelType == null)
-                throw new ArgumentNullException(nameof(viewModelType));
-
-            IsPending = false;
-            Initialize(tabId, viewModelType);
-        }
-
-        private void Initialize(string tabId, Type viewModelType)
-        {
-            TabId = tabId;
-            _viewModelTypesStack.Push(viewModelType);
-        }
-
-        public (TabPresentationAttribute attribute, MvxViewModelRequest vmRequest) ExtractPendingRequestData()
-        {
-            IsPending = false;
-            var result = (_pendingPresentationAttribute!, _pendingVMRequest!);
-            _pendingPresentationAttribute = null;
-            _pendingVMRequest = null;
-            return result;
-        }
-
-        public static ViewModelBackStackMetadata CreateFromPeindingRequest(TabPresentationAttribute attribute, MvxViewModelRequest vmRequest) 
-            => new ViewModelBackStackMetadata(attribute, vmRequest);
-
-        public static ViewModelBackStackMetadata Create(string tabId, Type viewModelType) 
-            => new ViewModelBackStackMetadata(tabId, viewModelType);
-
-        public bool HasViewModelInStack(Type viewModel) => _viewModelTypesStack.Contains(viewModel);
-
-        public void Push(Type viewModelType) => _viewModelTypesStack.Push(viewModelType);
-
-        public void Pop() => _viewModelTypesStack.Pop();
-
-        public void PopIfNeeded(int count)
-        {
-            if (count == _viewModelTypesStack.Count - 1)
-                _viewModelTypesStack.Pop();
-        }
-
-        public void Clear() => _viewModelTypesStack.Clear();
-
-        public void PopToRoot()
-        {
-            if (_viewModelTypesStack.Count > 0)
-            {
-                var firstVMtype = _viewModelTypesStack.ElementAt(0);
-                _viewModelTypesStack.Clear();
-                _viewModelTypesStack.Push(firstVMtype); 
-            }
+            var firstVmType = ViewModelTypesStack.ElementAt(0);
+            ViewModelTypesStack.Clear();
+            ViewModelTypesStack.Push(firstVmType); 
         }
     }
 }

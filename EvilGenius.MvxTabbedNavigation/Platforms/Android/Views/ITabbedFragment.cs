@@ -1,18 +1,17 @@
 ﻿using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
 using MvvmCross.Base;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Views;
+
+public interface ITabbedFragment : IFragmentHost
 {
-    public interface ITabbedFragment : IFragmentHost
-    {
-        void AddTab(TabPresentationAttribute tabPresentationAttribute);
+    void AddTab(TabPresentationAttribute tabPresentationAttribute);
 
-        event EventHandler<MvxValueEventArgs<int>> TabSelected;
+    event EventHandler<MvxValueEventArgs<int>> TabSelected;
 
-        void SelectTabAt(int index);
+    void SelectTabAt(int index);
 
-        void RemoveTab(string tabId);
+    void RemoveTab(string tabId);
 
-        //void UpdateCurrentTabTitle(FragNavTabPresentationAttribute tabPresentationAttribute, int tabIndex);
-    }
+    //void UpdateCurrentTabTitle(FragNavTabPresentationAttribute tabPresentationAttribute, int tabIndex);
 }

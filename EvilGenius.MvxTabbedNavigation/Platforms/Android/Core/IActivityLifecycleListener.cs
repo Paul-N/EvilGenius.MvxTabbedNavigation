@@ -1,25 +1,21 @@
-﻿using Android.App;
-using Android.OS;
+﻿namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Core
+//IMvxAndroidActivityLifetimeListener events are rising too late so we have to introduce our own listener
+public interface IActivityLifecycleListener
 {
-    //IMvxAndroidActivityLifetimeListener events are rising too late so we have to introduce our own listener
-    public interface IActivityLifecycleListener
-    {
-        public event EventHandler<ActivityLifecycleEventArgs> ActivityStateChanged;
+    public event EventHandler<ActivityLifecycleEventArgs> ActivityStateChanged;
 
-        public void OnActivityCreated(Activity activity, Bundle? savedInstanceState);
+    public void OnActivityCreated(Activity activity, Bundle? savedInstanceState);
 
-        public void OnActivityDestroyed(Activity activity);
+    public void OnActivityDestroyed(Activity activity);
 
-        public void OnActivityPaused(Activity activity);
+    public void OnActivityPaused(Activity activity);
 
-        public void OnActivityResumed(Activity activity);
+    public void OnActivityResumed(Activity activity);
 
-        public void OnActivitySaveInstanceState(Activity activity, Bundle outState);
+    public void OnActivitySaveInstanceState(Activity activity, Bundle outState);
 
-        public void OnActivityStarted(Activity activity);
+    public void OnActivityStarted(Activity activity);
 
-        public void OnActivityStopped(Activity activity);
-    }
+    public void OnActivityStopped(Activity activity);
 }

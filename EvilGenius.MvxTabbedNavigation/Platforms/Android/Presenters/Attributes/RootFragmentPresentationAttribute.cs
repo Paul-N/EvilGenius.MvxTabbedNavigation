@@ -1,11 +1,10 @@
 ﻿using MvvmCross.Presenters.Attributes;
 
-namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes
-{
-    public class RootFragmentPresentationAttribute : MvxBasePresentationAttribute
-    {
-        public string? Tag { get; set; }
+namespace EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
 
-        public Type HostActivityType { get; set; } = null!;
-    }
+public class RootFragmentPresentationAttribute : MvxBasePresentationAttribute
+{
+    public string? Tag { get; set; }
+
+    public Type HostActivityType { get; set; } = null!;
 }

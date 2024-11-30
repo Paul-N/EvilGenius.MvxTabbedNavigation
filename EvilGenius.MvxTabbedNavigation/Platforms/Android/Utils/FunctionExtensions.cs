@@ -2,11 +2,11 @@
 using Kotlin.Jvm.Functions;
 using JavaObject = Java.Lang.Object;
 
-namespace System
+// ReSharper disable once CheckNamespace
+namespace System;
+
+public static class FunctionExtensions
 {
-    public static class FunctionExtensions
-    {
-        public static IFunction1 Kotlinize<T, TResult>(this Func<T, TResult> dotNetFunc) where T : JavaObject where TResult : JavaObject 
-            => new KotlinFunction1<T, TResult>(dotNetFunc);
-    }
+    public static IFunction1 Kotlinize<T, TResult>(this Func<T, TResult> dotNetFunc) where T : JavaObject where TResult : JavaObject? 
+        => new KotlinFunction1<T, TResult>(dotNetFunc);
 }

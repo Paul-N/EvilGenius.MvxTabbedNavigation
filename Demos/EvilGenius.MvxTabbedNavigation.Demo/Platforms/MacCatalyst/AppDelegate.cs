@@ -1,11 +1,10 @@
 ﻿using Foundation;
 using UIKit;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo
+namespace EvilGenius.MvxTabbedNavigation.Demo;
+
+[Register("AppDelegate")]
+public class AppDelegate : /*Maui*/UIApplicationDelegate
 {
-    [Register("AppDelegate")]
-    public class AppDelegate : /*Maui*/UIApplicationDelegate
-    {
-        //protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
-    }
+    //protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

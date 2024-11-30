@@ -21,7 +21,6 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -60,6 +59,4 @@
 	  <ProjectReference Include="..\..\EvilGenius.MvxTabbedNavigation\EvilGenius.MvxTabbedNavigation.csproj" />
 	  <ProjectReference Include="..\EvilGenius.MvxTabbedNavigation.Demo.Core\EvilGenius.MvxTabbedNavigation.Demo.Core.csproj" />
 	</ItemGroup>
-
-	<ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadDebuggerTimeoutExceptionEvilGeniusMvxTabbedNavigationDemoHideInfoBar="True" /></VisualStudio></ProjectExtensions>
 </Project>

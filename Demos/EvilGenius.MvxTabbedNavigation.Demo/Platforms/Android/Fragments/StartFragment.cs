@@ -9,30 +9,26 @@ using View = Android.Views.View;
 using Android.Runtime;
 using EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Activities;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters.Attributes;
-#if SINGLE_PRJ
 using AndroidResource = EvilGenius.MvxTabbedNavigation.Demo.Resource;
-#endif
-#if ANDROID_PRJ
-using AndroidResource = EvilGenius.MvxTabbedNavigation.DemoMvx8.Android.Resource;
-#endif
+// ReSharper disable AccessToStaticMemberViaDerivedType
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments;
+
+[Register("org.evilgenius.tabbednavigation.fragments.StartFragment")]
+[RootFragmentPresentation(HostActivityType = typeof(MainActivity))]
+internal sealed class StartFragment : Fragment<StartViewModel>
 {
-    [Register("org.evilgenius.tabbednavigation.fragments.StartFragment")]
-    [RootFragmentPresentation(HostActivityType = typeof(MainActivity))]
-    internal sealed class StartFragment : Fragment<StartViewModel>
+    public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-        {
-            this.EnsureBindingContextIsSet();
+        this.EnsureBindingContextIsSet();
 
-            var view = this.BindingInflate(AndroidResource.Layout.fragment_start, null);
+        var view = this.BindingInflate(AndroidResource.Layout.fragment_start, null);
 
-            view.SetupTitledTextView(AndroidResource.Id.txtHello, this.Resources, CoreResource.Thanks);
+        view.SetupTitledTextView(AndroidResource.Id.txtHello, this.Resources, CoreResource.Thanks);
 
-            view.SetTextTo(AndroidResource.Id.btnStart, CoreResource.Start);
+        view.SetTextTo(AndroidResource.Id.btnStart, CoreResource.Start);
 
-            return view;
-        }
+        return view;
     }
 }

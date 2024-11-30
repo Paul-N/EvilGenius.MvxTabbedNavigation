@@ -4,106 +4,100 @@ using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.Platforms.Ios.Views;
 using UIKit;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers;
+
+[MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.LoginTab, TabIconName = "ic_account")]
+internal class PhoneViewControllers : MvxViewController<PhoneViewModel>
 {
-    [MvxTabPresentation(WrapInNavigationController = true, TabName = Resource.LoginTab, TabIconName = "ic_account")]
-    internal class PhoneViewControllers : MvxViewController<PhoneViewModel>
+    private UITextField _editTextPhone;
+    private UIButton _btnGetCode;
+
+    public override void LoadView()
     {
-        private UITextField _editTextPhone;
-        private UIButton _btnGetCode;
+        base.LoadView();
 
-        public PhoneViewControllers() { }
+        var lbl = ViewEx.CreateTitledLabel(Resource.EnterPhone);
 
-        public override void LoadView()
-        {
-            base.LoadView();
+        _editTextPhone = ViewEx.CreateTextField();
 
-            var lbl = ViewEx.CreateTitledLabel(Resource.EnterPhone);
+        _btnGetCode = ViewEx.CreateTitledButton(Resource.GetCode);
 
-            _editTextPhone = ViewEx.CreateTextField();
+        var stack = ViewEx.CreateStackView(UILayoutConstraintAxis.Vertical, lbl, _editTextPhone, _btnGetCode );
 
-            _btnGetCode = ViewEx.CreateTitledButton(Resource.GetCode);
+        View?.AddSubview(stack);
 
-            var stack = ViewEx.CreateStackView(UILayoutConstraintAxis.Vertical, lbl, _editTextPhone, _btnGetCode );
-
-            View.AddSubview(stack);
-
-            stack.CenterOf(View);
-        }
-
-        public override void ViewDidLoad()
-        {
-            base.ViewDidLoad();
-
-            var set = this.CreateBindingSet();
-            set.Bind(_editTextPhone).To(vm => vm.PhoneNumber);
-            set.Bind(_btnGetCode).To(vm => vm.NextCommand);
-            set.BindBackground(View);
-            set.Apply();
-        }
+        stack.CenterOf(View);
     }
 
-    internal class SmsCodeViewControllers : MvxViewController<SmsCodeViewModel>
+    public override void ViewDidLoad()
     {
-        private UITextField _editTextSms;
-        private UIButton _btnGetCode;
+        base.ViewDidLoad();
 
-        public SmsCodeViewControllers() { }
+        var set = this.CreateBindingSet();
+        set.Bind(_editTextPhone).To(vm => vm.PhoneNumber);
+        set.Bind(_btnGetCode).To(vm => vm.NextCommand);
+        set.BindBackground(View);
+        set.Apply();
+    }
+}
 
-        public override void LoadView()
-        {
-            base.LoadView();
+internal class SmsCodeViewControllers : MvxViewController<SmsCodeViewModel>
+{
+    private UITextField _editTextSms;
+    private UIButton _btnGetCode;
 
-            var lbl = ViewEx.CreateTitledLabel(Resource.EnterSms);
+    public override void LoadView()
+    {
+        base.LoadView();
 
-            _editTextSms = ViewEx.CreateTextField();
+        var lbl = ViewEx.CreateTitledLabel(Resource.EnterSms);
 
-            _btnGetCode = ViewEx.CreateTitledButton(Resource.Send);
+        _editTextSms = ViewEx.CreateTextField();
 
-            var stack = ViewEx.CreateStackView(UILayoutConstraintAxis.Vertical, lbl, _editTextSms, _btnGetCode);
+        _btnGetCode = ViewEx.CreateTitledButton(Resource.Send);
 
-            View.AddSubview(stack);
+        var stack = ViewEx.CreateStackView(UILayoutConstraintAxis.Vertical, lbl, _editTextSms, _btnGetCode);
 
-            stack.CenterOf(View);
-        }
+        View?.AddSubview(stack);
 
-        public override void ViewDidLoad()
-        {
-            base.ViewDidLoad();
-
-            var set = this.CreateBindingSet();
-            set.Bind(_editTextSms).To(vm => vm.SmsCode);
-            set.Bind(_btnGetCode).To(vm => vm.NextCommand);
-            set.BindBackground(View);
-            set.Apply();
-        }
+        stack.CenterOf(View);
     }
 
-    internal class AccountViewControllers : MvxViewController<AccountViewModel>
+    public override void ViewDidLoad()
     {
-        private UILabel _lblAccount;
+        base.ViewDidLoad();
 
-        public AccountViewControllers() { }
+        var set = this.CreateBindingSet();
+        set.Bind(_editTextSms).To(vm => vm.SmsCode);
+        set.Bind(_btnGetCode).To(vm => vm.NextCommand);
+        set.BindBackground(View);
+        set.Apply();
+    }
+}
 
-        public override void LoadView()
-        {
-            base.LoadView();
+internal class AccountViewControllers : MvxViewController<AccountViewModel>
+{
+    private UILabel _lblAccount;
 
-            _lblAccount = ViewEx.CreateTitledLabel(String.Empty);
+    public override void LoadView()
+    {
+        base.LoadView();
 
-            View.AddSubview(_lblAccount);
+        _lblAccount = ViewEx.CreateTitledLabel(String.Empty);
 
-            _lblAccount.CenterOf(View);
-        }
+        View?.AddSubview(_lblAccount);
 
-        public override void ViewDidLoad()
-        {
-            base.ViewDidLoad();
-            this.Title = Resource.Account;
-            var set = this.CreateBindingSet();
-            set.Bind(_lblAccount).To(vm => vm.AccountInfo);
-            set.BindBackground(View);
-            set.Apply();
-        }
+        _lblAccount.CenterOf(View);
+    }
+
+    public override void ViewDidLoad()
+    {
+        base.ViewDidLoad();
+        this.Title = Resource.Account;
+        var set = this.CreateBindingSet();
+        set.Bind(_lblAccount).To(vm => vm.AccountInfo);
+        set.BindBackground(View);
+        set.Apply();
     }
 }

@@ -2,17 +2,15 @@
 using MvvmCross.Platforms.Ios.Views;
 using UIKit;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers
-{
-    [MvxRootPresentation(WrapInNavigationController = true)]
-    public class HomeViewController : MvxTabBarViewController
-    {
-        public HomeViewController() { }
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS.Controllers;
 
-        public override void ViewDidLoad()
-        {
-            base.ViewDidLoad();
-            TabBar.BackgroundColor = UIColor.White;
-        }
+[MvxRootPresentation(WrapInNavigationController = true)]
+public class HomeViewController : MvxTabBarViewController
+{
+    public override void ViewDidLoad()
+    {
+        base.ViewDidLoad();
+        TabBar.BackgroundColor = UIColor.White;
     }
 }

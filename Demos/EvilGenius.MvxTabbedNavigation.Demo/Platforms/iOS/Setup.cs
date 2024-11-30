@@ -8,28 +8,27 @@ using Serilog;
 using Serilog.Extensions.Logging;
 using System.Reflection;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.iOS;
+
+public class Setup : MvxIosSetup<App>
 {
-    public class Setup : MvxIosSetup<App>
+    protected override ILoggerFactory CreateLogFactory()
     {
-        protected override ILoggerFactory CreateLogFactory()
-        {
-            // serilog configuration
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Debug()
-                .CreateLogger();
+        // serilog configuration
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Debug()
+            .CreateLogger();
 
-            return new SerilogLoggerFactory();
-        }
-
-        protected override ILoggerProvider CreateLogProvider() => new SerilogLoggerProvider();
-
-        protected override IMvxIosViewPresenter CreateViewPresenter() => new TabbedViewPresenter(ApplicationDelegate, Window);
-
-#if SINGLE_PRJ //The plugin asseblies are skipped in net6.0. Why?
-        public override IEnumerable<Assembly> GetPluginAssemblies() 
-            => base.GetPluginAssemblies().MergeWith(typeof(MvxNativeColorValueConverter));
-#endif
+        return new SerilogLoggerFactory();
     }
+
+    protected override ILoggerProvider CreateLogProvider() => new SerilogLoggerProvider();
+
+    protected override IMvxIosViewPresenter CreateViewPresenter() => new TabbedViewPresenter(ApplicationDelegate!, Window!);
+
+//The plugin assemblies are skipped in net6.0. Why?
+    public override IEnumerable<Assembly> GetPluginAssemblies() 
+        => base.GetPluginAssemblies().MergeWith(typeof(MvxNativeColorValueConverter));
 }

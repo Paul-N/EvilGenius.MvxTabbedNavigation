@@ -2,15 +2,14 @@
 using Android.Runtime;
 using EvilGenius.MvxTabbedNavigation.Demo.Core;
 using MvvmCross.Platforms.Android.Views;
-using System;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android;
+
+[Application]
+public class Application : MvxAndroidApplication<Setup, App>
 {
-    [Application]
-    public class Application : MvxAndroidApplication<Setup, App>
-    {
-        public Application() : base() { }
+    public Application() { }
 
-        public Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
-    }
+    public Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 }

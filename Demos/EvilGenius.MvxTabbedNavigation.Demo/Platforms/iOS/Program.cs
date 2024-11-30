@@ -1,9 +1,8 @@
 ﻿using UIKit;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo
+namespace EvilGenius.MvxTabbedNavigation.Demo;
+
+public class Program
 {
-    public class Program
-    {
-        static void Main(string[] args) => UIApplication.Main(args, null, typeof(AppDelegate));
-    }
+    private static void Main(string[] args) => UIApplication.Main(args, null, typeof(AppDelegate));
 }

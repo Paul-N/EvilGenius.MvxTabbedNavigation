@@ -1,5 +1,4 @@
-﻿using Android.App;
-using EvilGenius.MvxTabbedNavigation.Demo.Core;
+﻿using EvilGenius.MvxTabbedNavigation.Demo.Core;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Core;
 using EvilGenius.MvxTabbedNavigation.Platforms.Android.Presenters;
 using Microsoft.Extensions.Logging;
@@ -15,42 +14,41 @@ using Serilog.Extensions.Logging;
 using System.Reflection;
 using Log = Serilog.Log;
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android;
+
+public class Setup : MvxAndroidSetup<App>
 {
-    public class Setup : MvxAndroidSetup<App>
+    protected override ILoggerFactory CreateLogFactory()
     {
-        protected override ILoggerFactory CreateLogFactory()
-        {
-            // serilog configuration
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Debug()
-                .CreateLogger();
+        // serilog configuration
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Debug()
+            .CreateLogger();
 
-            return new SerilogLoggerFactory();
-        }
+        return new SerilogLoggerFactory();
+    }
 
-        protected override ILoggerProvider CreateLogProvider() => new SerilogLoggerProvider();
+    protected override ILoggerProvider CreateLogProvider() => new SerilogLoggerProvider();
 
-        protected override IMvxAndroidViewPresenter CreateViewPresenter()
-        {
-            var listener = Mvx.IoCProvider.Resolve<IActivityLifecycleListener>();
-            return new TabbedViewPresenter(AndroidViewAssemblies, listener);
-        }
+    protected override IMvxAndroidViewPresenter CreateViewPresenter()
+    {
+        var listener = Mvx.IoCProvider?.Resolve<IActivityLifecycleListener>() ?? throw new NullReferenceException("ActivityLifecycleListener is null");
+        return new TabbedViewPresenter(AndroidViewAssemblies, listener);
+    }
 
-#if SINGLE_PRJ //The plugin asseblies are skipped in net6.0. Why?
-        public override IEnumerable<Assembly> GetPluginAssemblies() 
-            => base.GetPluginAssemblies().MergeWith(typeof(IMvxMessenger), typeof(MvxNativeColorValueConverter));
-#endif
+//The plugin assemblies are skipped in net6.0. Why?
+    public override IEnumerable<Assembly> GetPluginAssemblies() 
+        => base.GetPluginAssemblies().MergeWith(typeof(IMvxMessenger), typeof(MvxNativeColorValueConverter));
 
-        protected override void InitializeFirstChance(IMvxIoCProvider iocProvider)
-        {
-            var activityLifecycleListener = new ActivityLifecycleListener();
-            MvxAndroidApplication.Instance.RegisterActivityLifecycleCallbacks(activityLifecycleListener);
+    protected override void InitializeFirstChance(IMvxIoCProvider iocProvider)
+    {
+        var activityLifecycleListener = new ActivityLifecycleListener();
+        MvxAndroidApplication.Instance.RegisterActivityLifecycleCallbacks(activityLifecycleListener);
 
-            iocProvider.RegisterSingleton<IActivityLifecycleListener>(activityLifecycleListener);
+        iocProvider.RegisterSingleton<IActivityLifecycleListener>(activityLifecycleListener);
 
-            base.InitializeFirstChance(iocProvider);
-        }
+        base.InitializeFirstChance(iocProvider);
     }
 }

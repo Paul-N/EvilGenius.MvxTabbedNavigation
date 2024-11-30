@@ -10,32 +10,28 @@ using Android.Views;
 using MvvmCross.Platforms.Android.Binding.BindingContext;
 using View = Android.Views.View;
 using EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Views;
-#if SINGLE_PRJ
 using AndroidResource = EvilGenius.MvxTabbedNavigation.Demo.Resource;
-#endif
-#if ANDROID_PRJ
-using AndroidResource = EvilGenius.MvxTabbedNavigation.DemoMvx8.Android.Resource;
-#endif
+// ReSharper disable AccessToStaticMemberViaDerivedType
 
-namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments
+// ReSharper disable once CheckNamespace
+namespace EvilGenius.MvxTabbedNavigation.Demo.Platforms.Android.Fragments;
+
+[TabPresentation(IconResourceId = AndroidResource.Drawable.ic_lock, TabId = TabNames.TabSecure, TabTitle = CoreResource.SecureTab)]
+[Register("org.evilgenius.tabbednavigation.fragments.SecureDataTabFragment")]
+internal sealed class SecureDataTabFragment : Fragment<SecureDataTabViewModel>
 {
-    [TabPresentation(IconResourceId = AndroidResource.Drawable.ic_lock, TabId = TabNames.TabSecure, TabTitle = CoreResource.SecureTab)]
-    [Register("org.evilgenius.tabbednavigation.fragments.SecureDataTabFragment")]
-    internal sealed class SecureDataTabFragment : Fragment<SecureDataTabViewModel>
+    public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-        {
-            this.EnsureBindingContextIsSet();
+        this.EnsureBindingContextIsSet();
 
-            var view = this.BindingInflate(AndroidResource.Layout.fragment_secure_data, null);
+        var view = this.BindingInflate(AndroidResource.Layout.fragment_secure_data, null);
 
-            view.SetSizeOf(AndroidResource.Id.lblTitle, Resources, CoreResource.TitleWidth, CoreResource._44px);
+        view.SetSizeOf(AndroidResource.Id.lblTitle, Resources, CoreResource.TitleWidth, CoreResource._44px);
 
-            view.SetupTitledTextView(AndroidResource.Id.btnGoAuth, Resources, CoreResource.GoLogin);
+        view.SetupTitledTextView(AndroidResource.Id.btnGoAuth, Resources, CoreResource.GoLogin);
 
-            this.SetToolbarBackButton(view);
+        this.SetToolbarBackButton(view);
 
-            return view;
-        }
+        return view;
     }
 }
